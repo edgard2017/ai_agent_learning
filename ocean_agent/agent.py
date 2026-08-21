@@ -8,6 +8,7 @@ from agents import (
     ModelSettings,
     OpenAIChatCompletionsModel,
     Runner,
+    Session,
     set_default_openai_key,
     set_tracing_disabled,
 )
@@ -19,6 +20,7 @@ from .agent_tools import (
     search_ocean_products,
 )
 from .config import Settings, get_settings
+from .sessions import build_session
 
 
 AGENT_INSTRUCTIONS = """
@@ -76,16 +78,16 @@ def build_agent(settings: Settings | None = None) -> Agent:
     )
 
 
-def run_agent_result(user_input: str) -> Any:
+def run_agent_result(user_input: str, session: Session | None = None) -> Any:
     """运行一次完整 Agent Loop，并保留过程记录。"""
 
-    return Runner.run_sync(build_agent(), user_input)
+    return Runner.run_sync(build_agent(), user_input, session=session)
 
 
-def run_agent(user_input: str) -> str:
+def run_agent(user_input: str, session: Session | None = None) -> str:
     """运行一次 Agent，并只返回最终文本。"""
 
-    return str(run_agent_result(user_input).final_output)
+    return str(run_agent_result(user_input, session=session).final_output)
 
 
 def _read_value(value: Any, field: str) -> Any:
@@ -147,18 +149,49 @@ def format_run_debug(result: Any) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="运行海洋设备选型 Agent")
-    parser.add_argument("question", help="用自然语言描述选型需求")
+    parser.add_argument("question", nargs="?", help="用自然语言描述选型需求")
     parser.add_argument(
         "--debug",
         action="store_true",
         help="显示模型轮数、Tool 名称、参数和返回状态",
     )
+    parser.add_argument(
+        "--session-id",
+        help="复用同一个会话 ID，让 Agent 记住前文",
+    )
+    parser.add_argument(
+        "--chat",
+        action="store_true",
+        help="进入连续对话模式；必须同时提供 --session-id",
+    )
     args = parser.parse_args()
+
+    if args.chat and not args.session_id:
+        parser.error("--chat 必须和 --session-id 一起使用")
+    if not args.chat and not args.question:
+        parser.error("请提供问题，或者使用 --chat --session-id <会话ID>")
+
+    session = build_session(args.session_id) if args.session_id else None
+
     try:
-        result = run_agent_result(args.question)
-        if args.debug:
-            print(format_run_debug(result))
-        print(result.final_output)
+        if args.chat:
+            print(f"已进入连续对话，会话 ID: {args.session_id}")
+            print("输入 /exit 结束，聊天记录会保存在本地 SQLite 数据库中。")
+            while True:
+                question = input("\n你: ").strip()
+                if question.lower() in {"/exit", "/quit"}:
+                    break
+                if not question:
+                    continue
+                result = run_agent_result(question, session=session)
+                if args.debug:
+                    print(format_run_debug(result))
+                print(f"\nAgent: {result.final_output}")
+        else:
+            result = run_agent_result(args.question, session=session)
+            if args.debug:
+                print(format_run_debug(result))
+            print(result.final_output)
     except APIConnectionError:
         parser.exit(
             1,
@@ -170,6 +203,9 @@ def main() -> None:
         if error.code == "credit_balance_exhausted":
             parser.exit(1, "API 账户没有可用额度：请先在 OpenAI Platform 的 Billing 页面充值。\n")
         parser.exit(1, "API 触发速率或额度限制，请稍后重试并检查账户 Limits。\n")
+    finally:
+        if session is not None:
+            session.close()
 
 
 if __name__ == "__main__":

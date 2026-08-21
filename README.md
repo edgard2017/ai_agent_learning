@@ -18,6 +18,7 @@ ocean_agent/
 ├── tools.py          # 与大模型无关的确定性查询函数
 ├── agent_tools.py    # Agents SDK Tool 包装和 JSON 输出
 ├── agent.py          # Agent、Runner 和命令行入口
+├── sessions.py       # SQLite 多轮会话与本地持久化
 └── config.py         # 从 .env 安全加载配置
 tests/
 ├── test_tools.py       # 产品查询测试
@@ -106,6 +107,27 @@ python -m ocean_agent.agent --debug "请介绍 SBE 19plus V2 SeaCAT 的工作深
 python -m ocean_agent.agent --debug \
   "请先筛选能在5000米测量温度、盐度和压力的CTD，再比较全部候选产品。"
 ```
+
+## 多轮会话
+
+普通命令每次都是一段独立对话。传入相同的 `--session-id` 后，Runner 会从本地
+SQLite 数据库读取这个会话的历史记录，并在本轮结束后自动保存新增内容：
+
+```bash
+python -m ocean_agent.agent --chat --session-id learning-demo
+```
+
+可以连续输入：
+
+```text
+我需要在5000米测量温度、盐度和压力，请筛选候选产品。
+比较它们的通信接口。
+/exit
+```
+
+记录默认保存在 `.agent_data/conversations.db`，该目录已加入 `.gitignore`，不会提交
+用户聊天数据。不同的 `session-id` 相当于不同聊天窗口；再次使用相同 ID，可以在程序
+重启后继续之前的对话。
 
 这里学习的仍然是 OpenAI Agents SDK：`Agent`、`Runner`、Function Tool 和运行循环没有改变；
 只是把负责理解问题和决定是否调用 Tool 的模型，从 OpenAI 模型替换成了本地 Qwen。
