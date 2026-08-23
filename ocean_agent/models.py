@@ -111,3 +111,17 @@ class Product(BaseModel):
             if item.depth_rating_m is not None
         ]
         return max(depths) if depths else None
+
+
+class TechnicalDocumentChunk(BaseModel):
+    """一段可以独立检索和引用的技术资料。"""
+
+    model_config = ConfigDict(frozen=True)
+
+    chunk_id: str = Field(pattern=r"^[a-z0-9-]+$")
+    product_id: str = Field(pattern=r"^[a-z0-9-]+$")
+    title: str
+    section: str
+    content: str
+    keywords: tuple[str, ...] = ()
+    source: SourceReference

@@ -10,6 +10,8 @@ from ocean_agent.agent_tools import (
     compare_ocean_products_data,
     get_ocean_product_details,
     get_ocean_product_details_data,
+    search_ocean_documents,
+    search_ocean_documents_data,
     search_ocean_products,
     search_ocean_products_data,
 )
@@ -108,6 +110,33 @@ class AgentToolTests(unittest.TestCase):
         self.assertEqual(compare_ocean_products.name, "compare_ocean_products")
         self.assertIn("product_ids", compare_ocean_products.params_json_schema["properties"])
 
+    def test_document_tool_returns_citable_chunks(self) -> None:
+        payload = json.loads(
+            search_ocean_documents_data(
+                "通信接口和采样率",
+                model_or_id="SBE 19plus V2 SeaCAT",
+            )
+        )
+
+        self.assertGreaterEqual(payload["count"], 1)
+        self.assertEqual(payload["results"][0]["chunk_id"], "sbe19-interface-sampling")
+        self.assertTrue(payload["results"][0]["source"]["url"])
+
+    def test_document_tool_reports_missing_knowledge(self) -> None:
+        payload = json.loads(
+            search_ocean_documents_data(
+                "故障码 E999 的维修步骤",
+                model_or_id="SBE 19plus V2 SeaCAT",
+            )
+        )
+
+        self.assertEqual(payload["count"], 0)
+        self.assertIn("资料", payload["message"])
+
+    def test_document_tool_has_generated_schema(self) -> None:
+        self.assertEqual(search_ocean_documents.name, "search_ocean_documents")
+        self.assertIn("query", search_ocean_documents.params_json_schema["properties"])
+
     def test_agent_registers_product_tool(self) -> None:
         agent = build_agent(Settings(_env_file=None))
 
@@ -117,6 +146,7 @@ class AgentToolTests(unittest.TestCase):
                 "search_ocean_products",
                 "get_ocean_product_details",
                 "compare_ocean_products",
+                "search_ocean_documents",
             ],
         )
         self.assertIsInstance(agent.model, OpenAIChatCompletionsModel)

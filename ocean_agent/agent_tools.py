@@ -5,7 +5,7 @@ import json
 from agents.decorators import tool
 
 from .models import DeploymentType, Product
-from .tools import get_product_spec, search_products
+from .tools import get_product_spec, search_documents, search_products
 
 
 def _parameter_role(product: Product, parameter: str) -> str:
@@ -160,6 +160,40 @@ def compare_ocean_products_data(product_ids: list[str]) -> str:
     )
 
 
+def search_ocean_documents_data(
+    query: str,
+    model_or_id: str | None = None,
+    limit: int = 3,
+) -> str:
+    """检索本地技术资料片段，并返回带来源的 JSON。"""
+
+    matches = search_documents(query, model_or_id=model_or_id, limit=limit)
+    results = [
+        {
+            "chunk_id": match.chunk.chunk_id,
+            "product_id": match.chunk.product_id,
+            "title": match.chunk.title,
+            "section": match.chunk.section,
+            "content": match.chunk.content,
+            "source": match.chunk.source.model_dump(mode="json"),
+            "relevance_score": match.score,
+        }
+        for match in matches
+    ]
+    return json.dumps(
+        {
+            "count": len(results),
+            "results": results,
+            "message": (
+                "当前本地技术资料没有找到相关片段；请明确说明资料不足，不要凭记忆补写。"
+                if not results
+                else "请只根据返回片段回答，并标明资料标题和来源 URL。"
+            ),
+        },
+        ensure_ascii=False,
+    )
+
+
 @tool
 def search_ocean_products(
     minimum_depth_m: int | None = None,
@@ -212,3 +246,23 @@ def compare_ocean_products(product_ids: list[str]) -> str:
     """
 
     return compare_ocean_products_data(product_ids)
+
+
+@tool
+def search_ocean_documents(
+    query: str,
+    model_or_id: str | None = None,
+    limit: int = 3,
+) -> str:
+    """检索已核验的海洋设备技术资料片段。
+
+    用户询问设备操作、连接、接线、供电、采样设置、维护、校准、故障排查或
+    说明书内容时使用。没有结果时不得凭模型记忆补全。
+
+    Args:
+        query: 要在技术资料中查找的问题或关键词。
+        model_or_id: 已知时传完整型号或产品 ID；不确定具体型号时传 null。
+        limit: 最多返回的资料片段数量，范围 1 到 10。
+    """
+
+    return search_ocean_documents_data(query, model_or_id=model_or_id, limit=limit)

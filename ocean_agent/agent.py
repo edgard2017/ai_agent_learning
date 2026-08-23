@@ -17,6 +17,7 @@ from openai import APIConnectionError, AsyncOpenAI, AuthenticationError, RateLim
 from .agent_tools import (
     compare_ocean_products,
     get_ocean_product_details,
+    search_ocean_documents,
     search_ocean_products,
 )
 from .config import Settings, get_settings
@@ -30,6 +31,9 @@ AGENT_INSTRUCTIONS = """
 用户没有明确部署方式时，不得自行假定 profiling、moored 或 fixed_site；搜索参数
 deployment_type 必须传 null。
 用户询问某个明确型号的详细参数时，调用 get_ocean_product_details。
+用户询问操作、连接、接线、供电、采样设置、维护、校准、故障排查或说明书内容时，
+调用 search_ocean_documents，并在回答中标明 Tool 返回的资料标题和来源 URL。
+如果技术资料 Tool 没有找到相关片段，必须说明当前知识库资料不足，不得凭记忆补写步骤。
 用户要求根据筛选条件比较候选产品时，先调用 search_ocean_products，再把返回的 product_id
 传给 compare_ocean_products；不得跳过搜索猜测 product_id。
 只把 Tool 返回的产品作为候选，并明确区分标配参数、选配参数和派生参数。
@@ -74,6 +78,7 @@ def build_agent(settings: Settings | None = None) -> Agent:
             search_ocean_products,
             get_ocean_product_details,
             compare_ocean_products,
+            search_ocean_documents,
         ],
     )
 
