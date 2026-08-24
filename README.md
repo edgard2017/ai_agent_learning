@@ -17,6 +17,7 @@ ocean_agent/
 ├── models.py         # Pydantic 数据模型
 ├── product_data.py   # 4 条厂家公开产品记录
 ├── document_data.py  # 7 个带来源的技术资料片段
+├── embedding_search.py # 本地 Embedding 与语义相似度实验
 ├── tools.py          # 产品查询和本地关键词检索
 ├── agent_tools.py    # Agents SDK Tool 包装和 JSON 输出
 ├── agent.py          # Agent、Runner 和命令行入口
@@ -161,3 +162,24 @@ Tool 返回内容包括：
 ```text
 用户问题 → 搜索相关资料片段 → 把片段交给模型 → 模型根据片段回答并标明来源
 ```
+
+## Embedding 相似度实验
+
+项目提供一个独立实验模块，尚未接入正式 Agent：
+
+- `create_embeddings()`：通过 Ollama 调用本地小模型生成向量。
+- `cosine_similarity()`：计算两个向量的余弦相似度。
+- `semantic_search()`：按照语义相似度对文本排序。
+
+运行中英文对照测试：
+
+```bash
+python -m tests.embedding_similarity_demo
+```
+
+当前本机 `nomic-embed-text:latest` 为137M参数，输出768维向量。真实测试中，英文组
+正确地把 RS-232 通信排在第一、天气排在最后；中文组却把天气排在第一，说明这个模型
+不适合直接用于当前中文海洋设备资料。
+
+因此当前正式 `search_ocean_documents` 仍使用关键词检索。Embedding 实验代码保留，
+下一步用于对比中文或多语言 Embedding 模型；只有通过测试的模型才会接入 RAG。

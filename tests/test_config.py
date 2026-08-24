@@ -43,6 +43,18 @@ class SettingsTests(unittest.TestCase):
         self.assertEqual(settings.ollama_base_url, "http://127.0.0.1:11435/v1")
         self.assertIn("Qwen3.8-27B", settings.ollama_model)
 
+    def test_uses_small_local_embedding_model_by_default(self) -> None:
+        settings = Settings(_env_file=None)
+
+        self.assertEqual(
+            settings.ollama_embedding_base_url,
+            "http://127.0.0.1:11435",
+        )
+        self.assertEqual(
+            settings.ollama_embedding_model,
+            "nomic-embed-text:latest",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

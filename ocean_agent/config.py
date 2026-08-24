@@ -23,10 +23,18 @@ class Settings(BaseSettings):
     model_provider: Literal["ollama", "openai"] = "ollama"
     ollama_base_url: str = "http://127.0.0.1:11435/v1"
     ollama_model: str = "hf.co/unsloth/Qwen3.8-27B-GGUF:UD-Q4_K_M"
+    ollama_embedding_base_url: str = "http://127.0.0.1:11435"
+    ollama_embedding_model: str = "nomic-embed-text:latest"
     openai_api_key: SecretStr | None = None
     openai_model: str = "gpt-5.6-luna"
 
-    @field_validator("ollama_base_url", "ollama_model", "openai_model")
+    @field_validator(
+        "ollama_base_url",
+        "ollama_model",
+        "ollama_embedding_base_url",
+        "ollama_embedding_model",
+        "openai_model",
+    )
     @classmethod
     def validate_non_empty_text(cls, value: str) -> str:
         text = value.strip()
