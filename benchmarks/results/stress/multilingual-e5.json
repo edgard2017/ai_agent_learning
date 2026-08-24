@@ -1,0 +1,1899 @@
+{
+  "model": {
+    "key": "multilingual-e5",
+    "model_id": "intfloat/multilingual-e5-large-instruct",
+    "query_template": "Instruct: Given a marine equipment technical query, retrieve passages that answer the query.\nQuery: {text}",
+    "document_template": "{text}",
+    "trust_remote_code": false
+  },
+  "dataset": {
+    "description": "在基础集上增加口语、错别字、中英混写、硬负例、多正确答案和无答案查询。",
+    "document_count": 28,
+    "case_count": 40,
+    "answerable_count": 32,
+    "no_answer_count": 8
+  },
+  "device": "cuda",
+  "embedding_dimension": 1024,
+  "load_seconds": 7.5853085038252175,
+  "encode_seconds": 0.24631980480626225,
+  "evaluated_at": "2026-08-24T11:26:59.068928+08:00",
+  "summary": {
+    "count": 32,
+    "top1_accuracy": 0.9375,
+    "hit_at_3": 1.0,
+    "recall_at_3": 1.0,
+    "mrr": 0.9635416666666666,
+    "ndcg_at_3": 0.9703328294599889,
+    "mean_margin": 0.0344390869140625
+  },
+  "by_direction": {
+    "zh_to_en": {
+      "count": 12,
+      "top1_accuracy": 0.9166666666666666,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 0.9444444444444445,
+      "ndcg_at_3": 0.9516433990956822,
+      "mean_margin": 0.035441080729166664
+    },
+    "en_to_zh": {
+      "count": 9,
+      "top1_accuracy": 1.0,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_3": 1.0,
+      "mean_margin": 0.03347439236111111
+    },
+    "zh_to_zh": {
+      "count": 6,
+      "top1_accuracy": 0.8333333333333334,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 0.9166666666666666,
+      "ndcg_at_3": 0.9384882922619097,
+      "mean_margin": 0.023763020833333332
+    },
+    "en_to_en": {
+      "count": 1,
+      "top1_accuracy": 1.0,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_3": 1.0,
+      "mean_margin": 0.0654296875
+    },
+    "mixed_to_en": {
+      "count": 3,
+      "top1_accuracy": 1.0,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_3": 1.0,
+      "mean_margin": 0.04931640625
+    },
+    "mixed_to_zh": {
+      "count": 1,
+      "top1_accuracy": 1.0,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_3": 1.0,
+      "mean_margin": 0.01953125
+    }
+  },
+  "by_category": {
+    "baseline": {
+      "count": 10,
+      "top1_accuracy": 1.0,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_3": 1.0,
+      "mean_margin": 0.058349609375
+    },
+    "hard_negative": {
+      "count": 4,
+      "top1_accuracy": 1.0,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_3": 1.0,
+      "mean_margin": 0.0081787109375
+    },
+    "mixed_abbreviation": {
+      "count": 4,
+      "top1_accuracy": 1.0,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_3": 1.0,
+      "mean_margin": 0.0418701171875
+    },
+    "multiple_relevant": {
+      "count": 4,
+      "top1_accuracy": 1.0,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_3": 0.9799301972870469,
+      "mean_margin": 0.045166015625
+    },
+    "noisy_typo": {
+      "count": 4,
+      "top1_accuracy": 0.75,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 0.875,
+      "ndcg_at_3": 0.9077324383928644,
+      "mean_margin": 0.006103515625
+    },
+    "paraphrase": {
+      "count": 6,
+      "top1_accuracy": 0.8333333333333334,
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr": 0.8888888888888888,
+      "ndcg_at_3": 0.9166666666666666,
+      "mean_margin": 0.018880208333333332
+    }
+  },
+  "no_answer": {
+    "count": 8,
+    "mean_max_score": 0.8328857421875,
+    "scores": [
+      0.8095703125,
+      0.8330078125,
+      0.8525390625,
+      0.8583984375,
+      0.83544921875,
+      0.82275390625,
+      0.84375,
+      0.8076171875
+    ],
+    "note": "无答案分数只用于后续选择阈值，不直接计入Top-1。"
+  },
+  "cases": [
+    {
+      "case_id": "zh-en-sbe19-interface",
+      "direction": "zh_to_en",
+      "category": "baseline",
+      "query": "SBE 19plus V2怎样连接计算机？",
+      "relevant_ids": [
+        "sbe19-interface-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.88330078125,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "rbr-interface-en",
+          "score": 0.80029296875,
+          "text": "Communication options for the RBRconcerto3 C.T.D include USB-C and either RS-232 or RS-485."
+        },
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.80029296875,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.6767578125,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0830078125
+    },
+    {
+      "case_id": "en-zh-sbe19-interface",
+      "direction": "en_to_zh",
+      "category": "baseline",
+      "query": "How does the SBE 19plus V2 connect to a computer?",
+      "relevant_ids": [
+        "sbe19-interface-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-interface-zh",
+          "score": 0.884765625,
+          "text": "SBE 19plus V2 SeaCAT 通过 RS-232 串行接口与计算机通信。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.80517578125,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        },
+        {
+          "document_id": "rbr-interface-zh",
+          "score": 0.79931640625,
+          "text": "RBRconcerto3 C.T.D 的通信选项包括USB-C，以及RS-232或RS-485。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.63623046875,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.07958984375
+    },
+    {
+      "case_id": "zh-en-rbr-power",
+      "direction": "zh_to_en",
+      "category": "baseline",
+      "query": "RBRconcerto3 CTD可以使用什么电源？",
+      "relevant_ids": [
+        "rbr-power-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.88330078125,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        },
+        {
+          "document_id": "rbr-interface-en",
+          "score": 0.8583984375,
+          "text": "Communication options for the RBRconcerto3 C.T.D include USB-C and either RS-232 or RS-485."
+        },
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.8447265625,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.68505859375,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.02490234375
+    },
+    {
+      "case_id": "en-zh-rbr-power",
+      "direction": "en_to_zh",
+      "category": "baseline",
+      "query": "What power sources can be used by the RBRconcerto3 CTD?",
+      "relevant_ids": [
+        "rbr-power-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "rbr-power-zh",
+          "score": 0.86572265625,
+          "text": "RBRconcerto3 C.T.D 可以使用8节AA电池或4.5至30伏外部电源供电。"
+        },
+        {
+          "document_id": "rbr-interface-zh",
+          "score": 0.8486328125,
+          "text": "RBRconcerto3 C.T.D 的通信选项包括USB-C，以及RS-232或RS-485。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.82861328125,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.6416015625,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.01708984375
+    },
+    {
+      "case_id": "zh-en-rbr-depth",
+      "direction": "zh_to_en",
+      "category": "baseline",
+      "query": "RBRconcerto3钛壳版本最大能下潜到多少米？",
+      "relevant_ids": [
+        "rbr-depth-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.88916015625,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.8095703125,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        },
+        {
+          "document_id": "rbr-interface-en",
+          "score": 0.8046875,
+          "text": "Communication options for the RBRconcerto3 C.T.D include USB-C and either RS-232 or RS-485."
+        },
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.8046875,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.07958984375
+    },
+    {
+      "case_id": "en-zh-rbr-depth",
+      "direction": "en_to_zh",
+      "category": "baseline",
+      "query": "What is the maximum depth of the titanium RBRconcerto3 configuration?",
+      "relevant_ids": [
+        "rbr-depth-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.888671875,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "rbr-interface-zh",
+          "score": 0.810546875,
+          "text": "RBRconcerto3 C.T.D 的通信选项包括USB-C，以及RS-232或RS-485。"
+        },
+        {
+          "document_id": "rbr-power-zh",
+          "score": 0.810546875,
+          "text": "RBRconcerto3 C.T.D 可以使用8节AA电池或4.5至30伏外部电源供电。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.78857421875,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.078125
+    },
+    {
+      "case_id": "zh-en-sbe16-sampling",
+      "direction": "zh_to_en",
+      "category": "baseline",
+      "query": "SBE 16plus V2的采样间隔可以怎样设置？",
+      "relevant_ids": [
+        "sbe16-sampling-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe16-sampling-en",
+          "score": 0.85888671875,
+          "text": "The basic conductivity and temperature sampling interval of the SBE 16plus V2 is programmable from 10 seconds to 4 hours."
+        },
+        {
+          "document_id": "sbe16-pressure-en",
+          "score": 0.79638671875,
+          "text": "Pressure is an optional measurement for the SBE 16plus V2 SeaCAT rather than a standard parameter."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.791015625,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.68310546875,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0625
+    },
+    {
+      "case_id": "en-zh-sbe16-sampling",
+      "direction": "en_to_zh",
+      "category": "baseline",
+      "query": "What sampling intervals can be programmed on the SBE 16plus V2?",
+      "relevant_ids": [
+        "sbe16-sampling-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe16-sampling-zh",
+          "score": 0.85693359375,
+          "text": "SBE 16plus V2 的基础电导率和温度采样间隔可以在10秒至4小时之间设置。"
+        },
+        {
+          "document_id": "sbe16-pressure-zh",
+          "score": 0.82080078125,
+          "text": "压力是SBE 16plus V2 SeaCAT的选配测量参数，不是标配参数。"
+        },
+        {
+          "document_id": "sbe19-interface-zh",
+          "score": 0.798828125,
+          "text": "SBE 19plus V2 SeaCAT 通过 RS-232 串行接口与计算机通信。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.64794921875,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0361328125
+    },
+    {
+      "case_id": "zh-zh-sbe16-pressure",
+      "direction": "zh_to_zh",
+      "category": "baseline",
+      "query": "SBE 16plus V2的压力是标配还是选配？",
+      "relevant_ids": [
+        "sbe16-pressure-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe16-pressure-zh",
+          "score": 0.9423828125,
+          "text": "压力是SBE 16plus V2 SeaCAT的选配测量参数，不是标配参数。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.88525390625,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        },
+        {
+          "document_id": "sbe16-sampling-zh",
+          "score": 0.87646484375,
+          "text": "SBE 16plus V2 的基础电导率和温度采样间隔可以在10秒至4小时之间设置。"
+        },
+        {
+          "document_id": "rbr-power-zh",
+          "score": 0.8330078125,
+          "text": "RBRconcerto3 C.T.D 可以使用8节AA电池或4.5至30伏外部电源供电。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.05712890625
+    },
+    {
+      "case_id": "en-en-rbr-interface",
+      "direction": "en_to_en",
+      "category": "baseline",
+      "query": "Does the RBRconcerto3 support RS-485 communication?",
+      "relevant_ids": [
+        "rbr-interface-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "rbr-interface-en",
+          "score": 0.9287109375,
+          "text": "Communication options for the RBRconcerto3 C.T.D include USB-C and either RS-232 or RS-485."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.86328125,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.85498046875,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.84375,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0654296875
+    },
+    {
+      "case_id": "zh-en-no-calibration",
+      "direction": "zh_to_en_no_answer",
+      "category": "baseline",
+      "query": "SBE 19plus V2的完整校准操作步骤是什么？",
+      "relevant_ids": [],
+      "ranking": [
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.8095703125,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.8056640625,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.72802734375,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.68603515625,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "no_answer_max_score": 0.8095703125
+    },
+    {
+      "case_id": "en-zh-no-firmware",
+      "direction": "en_to_zh_no_answer",
+      "category": "baseline",
+      "query": "How do I upgrade the RBRconcerto3 firmware?",
+      "relevant_ids": [],
+      "ranking": [
+        {
+          "document_id": "rbr-interface-zh",
+          "score": 0.8330078125,
+          "text": "RBRconcerto3 C.T.D 的通信选项包括USB-C，以及RS-232或RS-485。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.8134765625,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "rbr-power-zh",
+          "score": 0.810546875,
+          "text": "RBRconcerto3 C.T.D 可以使用8节AA电池或4.5至30伏外部电源供电。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.6416015625,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "no_answer_max_score": 0.8330078125
+    },
+    {
+      "case_id": "stress-zh-en-sbe19-strain-rate",
+      "direction": "zh_to_en",
+      "category": "paraphrase",
+      "query": "19plus装应变压力探头的时候一秒记录几次？",
+      "relevant_ids": [
+        "sbe19-sampling-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.8447265625,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe19-power-en",
+          "score": 0.80859375,
+          "text": "The SBE 19plus V2 uses nine alkaline D cells and provides approximately 60 hours of profiling operation."
+        },
+        {
+          "document_id": "sbe16-sampling-en",
+          "score": 0.80419921875,
+          "text": "The basic conductivity and temperature sampling interval of the SBE 16plus V2 is programmable from 10 seconds to 4 hours."
+        },
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.7978515625,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "rbr-sampling-en",
+          "score": 0.78564453125,
+          "text": "The RBRconcerto3 C.T.D has a standard sampling rate of 2 Hz and supports up to 32 Hz with an optional configuration."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.77783203125,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0361328125
+    },
+    {
+      "case_id": "stress-en-zh-sbe19-quartz-rate",
+      "direction": "en_to_zh",
+      "category": "paraphrase",
+      "query": "How often does the instrument record when the 19plus uses a quartz pressure sensor?",
+      "relevant_ids": [
+        "sbe19-sampling-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-sampling-zh",
+          "score": 0.84716796875,
+          "text": "SBE 19plus V2 配应变式压力传感器时采样率为4 Hz，配石英压力传感器时为2 Hz。"
+        },
+        {
+          "document_id": "sbe16-pressure-zh",
+          "score": 0.81494140625,
+          "text": "压力是SBE 16plus V2 SeaCAT的选配测量参数，不是标配参数。"
+        },
+        {
+          "document_id": "sbe19-power-zh",
+          "score": 0.7919921875,
+          "text": "SBE 19plus V2 使用9节碱性D型电池，剖面工作时间约为60小时。"
+        },
+        {
+          "document_id": "rbr-sampling-zh",
+          "score": 0.78759765625,
+          "text": "RBRconcerto3 C.T.D 标准采样率为2 Hz，选配配置最高支持32 Hz。"
+        },
+        {
+          "document_id": "sbe16-sampling-zh",
+          "score": 0.783203125,
+          "text": "SBE 16plus V2 的基础电导率和温度采样间隔可以在10秒至4小时之间设置。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.78076171875,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0322265625
+    },
+    {
+      "case_id": "stress-zh-en-sbe19-endurance",
+      "direction": "zh_to_en",
+      "category": "paraphrase",
+      "query": "SeaCAT做剖面连续工作大概能撑多久，用什么电池？",
+      "relevant_ids": [
+        "sbe19-power-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-power-en",
+          "score": 0.80712890625,
+          "text": "The SBE 19plus V2 uses nine alkaline D cells and provides approximately 60 hours of profiling operation."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.79736328125,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        },
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.7861328125,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.77587890625,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe16-depth-en",
+          "score": 0.77197265625,
+          "text": "SBE 16plus V2 housing options include a 600 meter plastic housing and a 10500 meter titanium housing."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.6767578125,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.009765625
+    },
+    {
+      "case_id": "stress-en-zh-sbe19-battery",
+      "direction": "en_to_zh",
+      "category": "paraphrase",
+      "query": "What batteries give the profiling SeaCAT roughly sixty hours of operation?",
+      "relevant_ids": [
+        "sbe19-power-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-power-zh",
+          "score": 0.80908203125,
+          "text": "SBE 19plus V2 使用9节碱性D型电池，剖面工作时间约为60小时。"
+        },
+        {
+          "document_id": "rbr-power-zh",
+          "score": 0.7802734375,
+          "text": "RBRconcerto3 C.T.D 可以使用8节AA电池或4.5至30伏外部电源供电。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.77392578125,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "sbe16-depth-zh",
+          "score": 0.75732421875,
+          "text": "SBE 16plus V2 提供600米塑料壳体和10500米钛合金壳体配置。"
+        },
+        {
+          "document_id": "sbe19-sampling-zh",
+          "score": 0.75439453125,
+          "text": "SBE 19plus V2 配应变式压力传感器时采样率为4 Hz，配石英压力传感器时为2 Hz。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.62109375,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.02880859375
+    },
+    {
+      "case_id": "stress-zh-en-sbe16-deep-housing",
+      "direction": "zh_to_en",
+      "category": "paraphrase",
+      "query": "长期固定站那款SeaCAT要去一万米，应选哪种外壳？",
+      "relevant_ids": [
+        "sbe16-depth-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.8173828125,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.80859375,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        },
+        {
+          "document_id": "sbe16-depth-en",
+          "score": 0.80615234375,
+          "text": "SBE 16plus V2 housing options include a 600 meter plastic housing and a 10500 meter titanium housing."
+        },
+        {
+          "document_id": "sbe16-sampling-en",
+          "score": 0.7548828125,
+          "text": "The basic conductivity and temperature sampling interval of the SBE 16plus V2 is programmable from 10 seconds to 4 hours."
+        },
+        {
+          "document_id": "sbe16-expansion-en",
+          "score": 0.7412109375,
+          "text": "SBE 16plus V2 provides six A/D channels and one RS-232 auxiliary channel for sensor expansion."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.6875,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "first_relevant_rank": 3,
+      "top1": false,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 0.3333333333333333,
+      "ndcg_at_3": 0.5,
+      "margin": -0.01123046875
+    },
+    {
+      "case_id": "stress-en-zh-sbe16-shallow-housing",
+      "direction": "en_to_zh",
+      "category": "paraphrase",
+      "query": "Which SBE 16plus housing is specified for a 600 m deployment?",
+      "relevant_ids": [
+        "sbe16-depth-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe16-depth-zh",
+          "score": 0.83935546875,
+          "text": "SBE 16plus V2 提供600米塑料壳体和10500米钛合金壳体配置。"
+        },
+        {
+          "document_id": "sbe16-expansion-zh",
+          "score": 0.82177734375,
+          "text": "SBE 16plus V2 提供6个A/D通道和1个RS-232辅助通道，用于扩展传感器。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.81689453125,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        },
+        {
+          "document_id": "sbe16-sampling-zh",
+          "score": 0.79833984375,
+          "text": "SBE 16plus V2 的基础电导率和温度采样间隔可以在10秒至4小时之间设置。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.7890625,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.63916015625,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.017578125
+    },
+    {
+      "case_id": "stress-mixed-en-sbe19-quartz",
+      "direction": "mixed_to_en",
+      "category": "mixed_abbreviation",
+      "query": "19+ V2 配 quartz pressure 是几 Hz？",
+      "relevant_ids": [
+        "sbe19-sampling-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.87158203125,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.82421875,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "rbr-sampling-en",
+          "score": 0.81689453125,
+          "text": "The RBRconcerto3 C.T.D has a standard sampling rate of 2 Hz and supports up to 32 Hz with an optional configuration."
+        },
+        {
+          "document_id": "sbe16-sampling-en",
+          "score": 0.80029296875,
+          "text": "The basic conductivity and temperature sampling interval of the SBE 16plus V2 is programmable from 10 seconds to 4 hours."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.79296875,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.7685546875,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.04736328125
+    },
+    {
+      "case_id": "stress-mixed-en-sbe16-ad",
+      "direction": "mixed_to_en",
+      "category": "mixed_abbreviation",
+      "query": "16plus 有几个 ADC channels 可以接 auxiliary sensors？",
+      "relevant_ids": [
+        "sbe16-expansion-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe16-expansion-en",
+          "score": 0.8759765625,
+          "text": "SBE 16plus V2 provides six A/D channels and one RS-232 auxiliary channel for sensor expansion."
+        },
+        {
+          "document_id": "sbe16-sampling-en",
+          "score": 0.80615234375,
+          "text": "The basic conductivity and temperature sampling interval of the SBE 16plus V2 is programmable from 10 seconds to 4 hours."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.79833984375,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "rbr-interface-en",
+          "score": 0.79443359375,
+          "text": "Communication options for the RBRconcerto3 C.T.D include USB-C and either RS-232 or RS-485."
+        },
+        {
+          "document_id": "sbe16-depth-en",
+          "score": 0.7880859375,
+          "text": "SBE 16plus V2 housing options include a 600 meter plastic housing and a 10500 meter titanium housing."
+        },
+        {
+          "document_id": "sbe37-options-en",
+          "score": 0.76416015625,
+          "text": "Conductivity and temperature are standard on the SBE 37 MicroCAT, while pressure and dissolved oxygen are optional."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.06982421875
+    },
+    {
+      "case_id": "stress-mixed-en-rbr-fast",
+      "direction": "mixed_to_en",
+      "category": "mixed_abbreviation",
+      "query": "RBR CTD fast mode 能到32赫兹吗？",
+      "relevant_ids": [
+        "rbr-sampling-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "rbr-sampling-en",
+          "score": 0.8525390625,
+          "text": "The RBRconcerto3 C.T.D has a standard sampling rate of 2 Hz and supports up to 32 Hz with an optional configuration."
+        },
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.82177734375,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        },
+        {
+          "document_id": "rbr-interface-en",
+          "score": 0.80810546875,
+          "text": "Communication options for the RBRconcerto3 C.T.D include USB-C and either RS-232 or RS-485."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.79736328125,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        },
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.794921875,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe16-sampling-en",
+          "score": 0.7802734375,
+          "text": "The basic conductivity and temperature sampling interval of the SBE 16plus V2 is programmable from 10 seconds to 4 hours."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.03076171875
+    },
+    {
+      "case_id": "stress-mixed-zh-microcat-o2",
+      "direction": "mixed_to_zh",
+      "category": "mixed_abbreviation",
+      "query": "MicroCAT 的 O2 sensor 是 standard 还是 optional？",
+      "relevant_ids": [
+        "sbe37-options-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe37-options-zh",
+          "score": 0.90478515625,
+          "text": "SBE 37 MicroCAT 标配电导率和温度，压力与溶解氧属于选配参数。"
+        },
+        {
+          "document_id": "sbe16-pressure-zh",
+          "score": 0.88525390625,
+          "text": "压力是SBE 16plus V2 SeaCAT的选配测量参数，不是标配参数。"
+        },
+        {
+          "document_id": "sbe16-expansion-zh",
+          "score": 0.85205078125,
+          "text": "SBE 16plus V2 提供6个A/D通道和1个RS-232辅助通道，用于扩展传感器。"
+        },
+        {
+          "document_id": "rbr-sampling-zh",
+          "score": 0.8515625,
+          "text": "RBRconcerto3 C.T.D 标准采样率为2 Hz，选配配置最高支持32 Hz。"
+        },
+        {
+          "document_id": "sbe19-power-zh",
+          "score": 0.83154296875,
+          "text": "SBE 19plus V2 使用9节碱性D型电池，剖面工作时间约为60小时。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.70654296875,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.01953125
+    },
+    {
+      "case_id": "stress-noisy-zh-rbr-sampling",
+      "direction": "zh_to_zh",
+      "category": "noisy_typo",
+      "query": "RBR conerto3 的采洋频率最高多少？",
+      "relevant_ids": [
+        "rbr-sampling-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "rbr-sampling-zh",
+          "score": 0.923828125,
+          "text": "RBRconcerto3 C.T.D 标准采样率为2 Hz，选配配置最高支持32 Hz。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.90966796875,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "sbe19-sampling-zh",
+          "score": 0.88037109375,
+          "text": "SBE 19plus V2 配应变式压力传感器时采样率为4 Hz，配石英压力传感器时为2 Hz。"
+        },
+        {
+          "document_id": "rbr-interface-zh",
+          "score": 0.8779296875,
+          "text": "RBRconcerto3 C.T.D 的通信选项包括USB-C，以及RS-232或RS-485。"
+        },
+        {
+          "document_id": "rbr-power-zh",
+          "score": 0.876953125,
+          "text": "RBRconcerto3 C.T.D 可以使用8节AA电池或4.5至30伏外部电源供电。"
+        },
+        {
+          "document_id": "sbe16-sampling-zh",
+          "score": 0.85205078125,
+          "text": "SBE 16plus V2 的基础电导率和温度采样间隔可以在10秒至4小时之间设置。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.01416015625
+    },
+    {
+      "case_id": "stress-noisy-zh-sbe16-depth",
+      "direction": "zh_to_zh",
+      "category": "noisy_typo",
+      "query": "SBE 16plsu 钛壳最大水生是多少？",
+      "relevant_ids": [
+        "sbe16-depth-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe16-depth-zh",
+          "score": 0.908203125,
+          "text": "SBE 16plus V2 提供600米塑料壳体和10500米钛合金壳体配置。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.9052734375,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.904296875,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        },
+        {
+          "document_id": "sbe16-sampling-zh",
+          "score": 0.8671875,
+          "text": "SBE 16plus V2 的基础电导率和温度采样间隔可以在10秒至4小时之间设置。"
+        },
+        {
+          "document_id": "sbe16-expansion-zh",
+          "score": 0.853515625,
+          "text": "SBE 16plus V2 提供6个A/D通道和1个RS-232辅助通道，用于扩展传感器。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.72412109375,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0029296875
+    },
+    {
+      "case_id": "stress-noisy-zh-sbe19-power",
+      "direction": "zh_to_zh",
+      "category": "noisy_typo",
+      "query": "19plus V2 是用九节D点池吗？",
+      "relevant_ids": [
+        "sbe19-power-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-power-zh",
+          "score": 0.8955078125,
+          "text": "SBE 19plus V2 使用9节碱性D型电池，剖面工作时间约为60小时。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.8857421875,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        },
+        {
+          "document_id": "sbe19-sampling-zh",
+          "score": 0.876953125,
+          "text": "SBE 19plus V2 配应变式压力传感器时采样率为4 Hz，配石英压力传感器时为2 Hz。"
+        },
+        {
+          "document_id": "sbe16-depth-zh",
+          "score": 0.86767578125,
+          "text": "SBE 16plus V2 提供600米塑料壳体和10500米钛合金壳体配置。"
+        },
+        {
+          "document_id": "rbr-power-zh",
+          "score": 0.84423828125,
+          "text": "RBRconcerto3 C.T.D 可以使用8节AA电池或4.5至30伏外部电源供电。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.7216796875,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.009765625
+    },
+    {
+      "case_id": "stress-noisy-zh-microcat-pressure",
+      "direction": "zh_to_zh",
+      "category": "noisy_typo",
+      "query": "MicroCAT 的压利是不是标配？",
+      "relevant_ids": [
+        "sbe37-options-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe16-pressure-zh",
+          "score": 0.8974609375,
+          "text": "压力是SBE 16plus V2 SeaCAT的选配测量参数，不是标配参数。"
+        },
+        {
+          "document_id": "sbe37-options-zh",
+          "score": 0.89501953125,
+          "text": "SBE 37 MicroCAT 标配电导率和温度，压力与溶解氧属于选配参数。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.849609375,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.83984375,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        },
+        {
+          "document_id": "sbe16-expansion-zh",
+          "score": 0.8310546875,
+          "text": "SBE 16plus V2 提供6个A/D通道和1个RS-232辅助通道，用于扩展传感器。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.70947265625,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 2,
+      "top1": false,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 0.5,
+      "ndcg_at_3": 0.6309297535714575,
+      "margin": -0.00244140625
+    },
+    {
+      "case_id": "stress-hard-sbe19-vs-sbe16-depth",
+      "direction": "zh_to_en",
+      "category": "hard_negative",
+      "query": "做剖面观测的SBE 19plus有哪些不同耐压壳体？",
+      "relevant_ids": [
+        "sbe19-depth-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.8466796875,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.83984375,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe19-power-en",
+          "score": 0.81640625,
+          "text": "The SBE 19plus V2 uses nine alkaline D cells and provides approximately 60 hours of profiling operation."
+        },
+        {
+          "document_id": "sbe16-depth-en",
+          "score": 0.81591796875,
+          "text": "SBE 16plus V2 housing options include a 600 meter plastic housing and a 10500 meter titanium housing."
+        },
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.80029296875,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.7861328125,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0068359375
+    },
+    {
+      "case_id": "stress-hard-sbe16-interface-vs-sampling",
+      "direction": "en_to_zh",
+      "category": "hard_negative",
+      "query": "Which passage explains expansion channels rather than sampling intervals for the SBE 16plus?",
+      "relevant_ids": [
+        "sbe16-expansion-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe16-expansion-zh",
+          "score": 0.83447265625,
+          "text": "SBE 16plus V2 提供6个A/D通道和1个RS-232辅助通道，用于扩展传感器。"
+        },
+        {
+          "document_id": "sbe16-pressure-zh",
+          "score": 0.82373046875,
+          "text": "压力是SBE 16plus V2 SeaCAT的选配测量参数，不是标配参数。"
+        },
+        {
+          "document_id": "sbe16-sampling-zh",
+          "score": 0.814453125,
+          "text": "SBE 16plus V2 的基础电导率和温度采样间隔可以在10秒至4小时之间设置。"
+        },
+        {
+          "document_id": "sbe16-depth-zh",
+          "score": 0.7958984375,
+          "text": "SBE 16plus V2 提供600米塑料壳体和10500米钛合金壳体配置。"
+        },
+        {
+          "document_id": "sbe19-interface-zh",
+          "score": 0.78466796875,
+          "text": "SBE 19plus V2 SeaCAT 通过 RS-232 串行接口与计算机通信。"
+        },
+        {
+          "document_id": "rbr-interface-zh",
+          "score": 0.75341796875,
+          "text": "RBRconcerto3 C.T.D 的通信选项包括USB-C，以及RS-232或RS-485。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0107421875
+    },
+    {
+      "case_id": "stress-hard-rbr-rate-vs-power",
+      "direction": "zh_to_en",
+      "category": "hard_negative",
+      "query": "我要找RBR的每秒采集次数，不是电压或通信参数。",
+      "relevant_ids": [
+        "rbr-sampling-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "rbr-sampling-en",
+          "score": 0.822265625,
+          "text": "The RBRconcerto3 C.T.D has a standard sampling rate of 2 Hz and supports up to 32 Hz with an optional configuration."
+        },
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.80810546875,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe16-sampling-en",
+          "score": 0.7978515625,
+          "text": "The basic conductivity and temperature sampling interval of the SBE 16plus V2 is programmable from 10 seconds to 4 hours."
+        },
+        {
+          "document_id": "rbr-interface-en",
+          "score": 0.79248046875,
+          "text": "Communication options for the RBRconcerto3 C.T.D include USB-C and either RS-232 or RS-485."
+        },
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.79150390625,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.78369140625,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.01416015625
+    },
+    {
+      "case_id": "stress-hard-microcat-options",
+      "direction": "en_to_zh",
+      "category": "hard_negative",
+      "query": "Find the MicroCAT passage about standard versus optional measurements, not housing depth.",
+      "relevant_ids": [
+        "sbe37-options-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe37-options-zh",
+          "score": 0.814453125,
+          "text": "SBE 37 MicroCAT 标配电导率和温度，压力与溶解氧属于选配参数。"
+        },
+        {
+          "document_id": "sbe16-pressure-zh",
+          "score": 0.8134765625,
+          "text": "压力是SBE 16plus V2 SeaCAT的选配测量参数，不是标配参数。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.77197265625,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "sbe16-expansion-zh",
+          "score": 0.767578125,
+          "text": "SBE 16plus V2 提供6个A/D通道和1个RS-232辅助通道，用于扩展传感器。"
+        },
+        {
+          "document_id": "sbe16-depth-zh",
+          "score": 0.763671875,
+          "text": "SBE 16plus V2 提供600米塑料壳体和10500米钛合金壳体配置。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.7626953125,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.0009765625
+    },
+    {
+      "case_id": "stress-multi-rs232-en",
+      "direction": "zh_to_en",
+      "category": "multiple_relevant",
+      "query": "哪些英文资料提到设备可以用RS-232通信？",
+      "relevant_ids": [
+        "sbe19-interface-en",
+        "rbr-interface-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.8623046875,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "rbr-interface-en",
+          "score": 0.85888671875,
+          "text": "Communication options for the RBRconcerto3 C.T.D include USB-C and either RS-232 or RS-485."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.7841796875,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        },
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.779296875,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "sbe16-sampling-en",
+          "score": 0.76953125,
+          "text": "The basic conductivity and temperature sampling interval of the SBE 16plus V2 is programmable from 10 seconds to 4 hours."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.6728515625,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.078125
+    },
+    {
+      "case_id": "stress-multi-optional-pressure-zh",
+      "direction": "zh_to_zh",
+      "category": "multiple_relevant",
+      "query": "找出所有明确说明压力属于选配的资料。",
+      "relevant_ids": [
+        "sbe16-pressure-zh",
+        "sbe37-options-zh"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe16-pressure-zh",
+          "score": 0.8935546875,
+          "text": "压力是SBE 16plus V2 SeaCAT的选配测量参数，不是标配参数。"
+        },
+        {
+          "document_id": "sbe37-options-zh",
+          "score": 0.87548828125,
+          "text": "SBE 37 MicroCAT 标配电导率和温度，压力与溶解氧属于选配参数。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.83251953125,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "sbe19-depth-zh",
+          "score": 0.8173828125,
+          "text": "SBE 19plus V2 提供600米共聚醋酸酯壳体、7000米钛壳和10500米钛壳配置。"
+        },
+        {
+          "document_id": "sbe16-expansion-zh",
+          "score": 0.802734375,
+          "text": "SBE 16plus V2 提供6个A/D通道和1个RS-232辅助通道，用于扩展传感器。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.728515625,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.06103515625
+    },
+    {
+      "case_id": "stress-multi-sbe19-operation-en",
+      "direction": "zh_to_en",
+      "category": "multiple_relevant",
+      "query": "同时找出SBE 19plus续航和压力传感器采样速度的英文资料。",
+      "relevant_ids": [
+        "sbe19-power-en",
+        "sbe19-sampling-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.88818359375,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.86083984375,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "sbe19-power-en",
+          "score": 0.86083984375,
+          "text": "The SBE 19plus V2 uses nine alkaline D cells and provides approximately 60 hours of profiling operation."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.8291015625,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "rbr-sampling-en",
+          "score": 0.81201171875,
+          "text": "The RBRconcerto3 C.T.D has a standard sampling rate of 2 Hz and supports up to 32 Hz with an optional configuration."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.78564453125,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 0.9197207891481876,
+      "margin": 0.02734375
+    },
+    {
+      "case_id": "stress-multi-rbr-power-rate-en",
+      "direction": "zh_to_en",
+      "category": "multiple_relevant",
+      "query": "我要RBRconcerto3供电方式和最高采样率两方面的英文资料。",
+      "relevant_ids": [
+        "rbr-power-en",
+        "rbr-sampling-en"
+      ],
+      "ranking": [
+        {
+          "document_id": "rbr-sampling-en",
+          "score": 0.86083984375,
+          "text": "The RBRconcerto3 C.T.D has a standard sampling rate of 2 Hz and supports up to 32 Hz with an optional configuration."
+        },
+        {
+          "document_id": "rbr-power-en",
+          "score": 0.85986328125,
+          "text": "The RBRconcerto3 C.T.D can be powered by eight AA cells or an external 4.5 to 30 volt supply."
+        },
+        {
+          "document_id": "rbr-interface-en",
+          "score": 0.8466796875,
+          "text": "Communication options for the RBRconcerto3 C.T.D include USB-C and either RS-232 or RS-485."
+        },
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.84423828125,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        },
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.8193359375,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe19-power-en",
+          "score": 0.8076171875,
+          "text": "The SBE 19plus V2 uses nine alkaline D cells and provides approximately 60 hours of profiling operation."
+        }
+      ],
+      "first_relevant_rank": 1,
+      "top1": true,
+      "hit_at_3": true,
+      "recall_at_3": 1.0,
+      "reciprocal_rank": 1.0,
+      "ndcg_at_3": 1.0,
+      "margin": 0.01416015625
+    },
+    {
+      "case_id": "stress-noanswer-sbe19-dimensions",
+      "direction": "zh_to_en_no_answer",
+      "category": "no_answer",
+      "query": "SBE 19plus V2的外形尺寸和裸机重量是多少？",
+      "relevant_ids": [],
+      "ranking": [
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.8525390625,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "sbe19-power-en",
+          "score": 0.82177734375,
+          "text": "The SBE 19plus V2 uses nine alkaline D cells and provides approximately 60 hours of profiling operation."
+        },
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.818359375,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.80419921875,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.765625,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.68994140625,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "no_answer_max_score": 0.8525390625
+    },
+    {
+      "case_id": "stress-noanswer-rbr-bluetooth",
+      "direction": "en_to_zh_no_answer",
+      "category": "no_answer",
+      "query": "How do I pair the RBRconcerto3 with a phone over Bluetooth?",
+      "relevant_ids": [],
+      "ranking": [
+        {
+          "document_id": "rbr-interface-zh",
+          "score": 0.8583984375,
+          "text": "RBRconcerto3 C.T.D 的通信选项包括USB-C，以及RS-232或RS-485。"
+        },
+        {
+          "document_id": "rbr-power-zh",
+          "score": 0.8212890625,
+          "text": "RBRconcerto3 C.T.D 可以使用8节AA电池或4.5至30伏外部电源供电。"
+        },
+        {
+          "document_id": "sbe19-interface-zh",
+          "score": 0.8173828125,
+          "text": "SBE 19plus V2 SeaCAT 通过 RS-232 串行接口与计算机通信。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.80859375,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "rbr-sampling-zh",
+          "score": 0.806640625,
+          "text": "RBRconcerto3 C.T.D 标准采样率为2 Hz，选配配置最高支持32 Hz。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.66748046875,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "no_answer_max_score": 0.8583984375
+    },
+    {
+      "case_id": "stress-noanswer-sbe16-calibration",
+      "direction": "zh_to_en_no_answer",
+      "category": "no_answer",
+      "query": "请给出SBE 16plus电导率传感器的完整校准流程。",
+      "relevant_ids": [],
+      "ranking": [
+        {
+          "document_id": "sbe16-sampling-en",
+          "score": 0.83544921875,
+          "text": "The basic conductivity and temperature sampling interval of the SBE 16plus V2 is programmable from 10 seconds to 4 hours."
+        },
+        {
+          "document_id": "sbe16-expansion-en",
+          "score": 0.80419921875,
+          "text": "SBE 16plus V2 provides six A/D channels and one RS-232 auxiliary channel for sensor expansion."
+        },
+        {
+          "document_id": "sbe19-sampling-en",
+          "score": 0.79833984375,
+          "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+        },
+        {
+          "document_id": "sbe16-depth-en",
+          "score": 0.78271484375,
+          "text": "SBE 16plus V2 housing options include a 600 meter plastic housing and a 10500 meter titanium housing."
+        },
+        {
+          "document_id": "sbe16-pressure-en",
+          "score": 0.76904296875,
+          "text": "Pressure is an optional measurement for the SBE 16plus V2 SeaCAT rather than a standard parameter."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.69677734375,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "no_answer_max_score": 0.83544921875
+    },
+    {
+      "case_id": "stress-noanswer-microcat-firmware",
+      "direction": "en_to_zh_no_answer",
+      "category": "no_answer",
+      "query": "What firmware version is currently installed on the SBE 37 MicroCAT?",
+      "relevant_ids": [],
+      "ranking": [
+        {
+          "document_id": "sbe19-interface-zh",
+          "score": 0.82275390625,
+          "text": "SBE 19plus V2 SeaCAT 通过 RS-232 串行接口与计算机通信。"
+        },
+        {
+          "document_id": "sbe37-options-zh",
+          "score": 0.8115234375,
+          "text": "SBE 37 MicroCAT 标配电导率和温度，压力与溶解氧属于选配参数。"
+        },
+        {
+          "document_id": "sbe16-pressure-zh",
+          "score": 0.80419921875,
+          "text": "压力是SBE 16plus V2 SeaCAT的选配测量参数，不是标配参数。"
+        },
+        {
+          "document_id": "sbe16-expansion-zh",
+          "score": 0.79931640625,
+          "text": "SBE 16plus V2 提供6个A/D通道和1个RS-232辅助通道，用于扩展传感器。"
+        },
+        {
+          "document_id": "rbr-interface-zh",
+          "score": 0.7783203125,
+          "text": "RBRconcerto3 C.T.D 的通信选项包括USB-C，以及RS-232或RS-485。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.63427734375,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "no_answer_max_score": 0.82275390625
+    },
+    {
+      "case_id": "stress-noanswer-price",
+      "direction": "zh_to_en_no_answer",
+      "category": "no_answer",
+      "query": "购买一台7000米SBE 19plus的含税价格是多少？",
+      "relevant_ids": [],
+      "ranking": [
+        {
+          "document_id": "sbe19-depth-en",
+          "score": 0.84375,
+          "text": "The SBE 19plus V2 has 600 m acetal, 7000 m titanium, and 10500 m titanium housing configurations."
+        },
+        {
+          "document_id": "sbe16-depth-en",
+          "score": 0.82080078125,
+          "text": "SBE 16plus V2 housing options include a 600 meter plastic housing and a 10500 meter titanium housing."
+        },
+        {
+          "document_id": "sbe19-power-en",
+          "score": 0.79345703125,
+          "text": "The SBE 19plus V2 uses nine alkaline D cells and provides approximately 60 hours of profiling operation."
+        },
+        {
+          "document_id": "sbe19-interface-en",
+          "score": 0.78759765625,
+          "text": "The SBE 19plus V2 SeaCAT communicates with a computer through an RS-232 serial interface."
+        },
+        {
+          "document_id": "rbr-depth-en",
+          "score": 0.7841796875,
+          "text": "The titanium RBRconcerto3 C.T.D configuration is rated to a maximum depth of 6000 meters."
+        },
+        {
+          "document_id": "weather-en",
+          "score": 0.68603515625,
+          "text": "The weather in Hangzhou is pleasant today and suitable for a walk in the park."
+        }
+      ],
+      "no_answer_max_score": 0.84375
+    },
+    {
+      "case_id": "stress-noanswer-warranty",
+      "direction": "en_to_zh_no_answer",
+      "category": "no_answer",
+      "query": "How many years of warranty are included with the RBR CTD?",
+      "relevant_ids": [],
+      "ranking": [
+        {
+          "document_id": "rbr-interface-zh",
+          "score": 0.8076171875,
+          "text": "RBRconcerto3 C.T.D 的通信选项包括USB-C，以及RS-232或RS-485。"
+        },
+        {
+          "document_id": "rbr-depth-zh",
+          "score": 0.806640625,
+          "text": "RBRconcerto3 C.T.D 的钛壳配置最大工作深度为6000米。"
+        },
+        {
+          "document_id": "rbr-power-zh",
+          "score": 0.80224609375,
+          "text": "RBRconcerto3 C.T.D 可以使用8节AA电池或4.5至30伏外部电源供电。"
+        },
+        {
+          "document_id": "rbr-sampling-zh",
+          "score": 0.79638671875,
+          "text": "RBRconcerto3 C.T.D 标准采样率为2 Hz，选配配置最高支持32 Hz。"
+        },
+        {
+          "document_id": "sbe19-power-zh",
+          "score": 0.759765625,
+          "text": "SBE 19plus V2 使用9节碱性D型电池，剖面工作时间约为60小时。"
+        },
+        {
+          "document_id": "weather-zh",
+          "score": 0.6318359375,
+          "text": "今天杭州天气很好，适合去公园散步。"
+        }
+      ],
+      "no_answer_max_score": 0.8076171875
+    }
+  ]
+}

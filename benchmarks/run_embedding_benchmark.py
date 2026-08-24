@@ -6,6 +6,7 @@ import argparse
 from dataclasses import asdict, dataclass
 from datetime import datetime
 import json
+import math
 from pathlib import Path
 import time
 from typing import Any
@@ -60,11 +61,46 @@ MODEL_SPECS = {
 }
 
 
-def load_dataset(path: Path) -> dict[str, Any]:
+def load_dataset(
+    path: Path,
+    _loading: frozenset[Path] = frozenset(),
+) -> dict[str, Any]:
+    path = path.resolve()
+    if path in _loading:
+        raise ValueError(f"评测集 extends 出现循环引用: {path}")
     with path.open(encoding="utf-8") as file:
         data = json.load(file)
+
+    if data.get("extends"):
+        base_path = (path.parent / data["extends"]).resolve()
+        base = load_dataset(base_path, _loading | {path})
+        data = {
+            **data,
+            "documents": [*base["documents"], *data.get("documents", [])],
+            "cases": [*base["cases"], *data.get("cases", [])],
+        }
+
     if not data.get("documents") or not data.get("cases"):
         raise ValueError("评测集必须包含 documents 和 cases")
+    document_ids = [item["id"] for item in data["documents"]]
+    case_ids = [item["id"] for item in data["cases"]]
+    if len(document_ids) != len(set(document_ids)):
+        raise ValueError("document id 不能重复")
+    if len(case_ids) != len(set(case_ids)):
+        raise ValueError("case id 不能重复")
+
+    known_documents = set(document_ids)
+    for case in data["cases"]:
+        candidates = case.get("candidate_ids", [])
+        relevant = set(case.get("relevant_ids", []))
+        if len(candidates) < 2:
+            raise ValueError(f"{case['id']} 至少需要两个候选资料")
+        if len(candidates) != len(set(candidates)):
+            raise ValueError(f"{case['id']} 的候选资料不能重复")
+        if not set(candidates) <= known_documents:
+            raise ValueError(f"{case['id']} 引用了不存在的候选资料")
+        if not relevant <= set(candidates):
+            raise ValueError(f"{case['id']} 的正确资料必须属于候选资料")
     return data
 
 
@@ -140,6 +176,7 @@ def evaluate_model(
         result: dict[str, Any] = {
             "case_id": case["id"],
             "direction": case["direction"],
+            "category": case.get("category", "baseline"),
             "query": case["query"],
             "relevant_ids": case["relevant_ids"],
             "ranking": ranked,
@@ -165,8 +202,21 @@ def evaluate_model(
                 {
                     "first_relevant_rank": first_relevant_rank,
                     "top1": first_relevant_rank == 1,
-                    "recall_at_3": first_relevant_rank <= 3,
+                    "hit_at_3": first_relevant_rank <= 3,
+                    "recall_at_3": sum(
+                        item["document_id"] in relevant_ids for item in ranked[:3]
+                    )
+                    / len(relevant_ids),
                     "reciprocal_rank": 1.0 / first_relevant_rank,
+                    "ndcg_at_3": sum(
+                        1.0 / math.log2(rank + 1)
+                        for rank, item in enumerate(ranked[:3], start=1)
+                        if item["document_id"] in relevant_ids
+                    )
+                    / sum(
+                        1.0 / math.log2(rank + 1)
+                        for rank in range(1, min(len(relevant_ids), 3) + 1)
+                    ),
                     "margin": best_relevant - best_negative,
                 }
             )
@@ -183,14 +233,23 @@ def evaluate_model(
         return {
             "count": len(items),
             "top1_accuracy": sum(item["top1"] for item in items) / len(items),
+            "hit_at_3": sum(item["hit_at_3"] for item in items) / len(items),
             "recall_at_3": sum(item["recall_at_3"] for item in items) / len(items),
             "mrr": sum(item["reciprocal_rank"] for item in items) / len(items),
+            "ndcg_at_3": sum(item["ndcg_at_3"] for item in items) / len(items),
             "mean_margin": sum(item["margin"] for item in items) / len(items),
         }
 
     dimension = int(document_vectors.shape[1])
     return {
         "model": asdict(spec),
+        "dataset": {
+            "description": dataset.get("description", ""),
+            "document_count": len(documents),
+            "case_count": len(dataset["cases"]),
+            "answerable_count": len(positive_cases),
+            "no_answer_count": len(no_answer_max_scores),
+        },
         "device": device,
         "embedding_dimension": dimension,
         "load_seconds": load_seconds,
@@ -199,6 +258,12 @@ def evaluate_model(
         "summary": summarize(positive_cases),
         "by_direction": {
             direction: summarize(items) for direction, items in by_direction.items()
+        },
+        "by_category": {
+            category: summarize(
+                [item for item in positive_cases if item["category"] == category]
+            )
+            for category in sorted({item["category"] for item in positive_cases})
         },
         "no_answer": {
             "count": len(no_answer_max_scores),
@@ -222,14 +287,24 @@ def print_summary(result: dict[str, Any]) -> None:
     print(f"模型加载: {result['load_seconds']:.2f} 秒")
     print(f"编码耗时: {result['encode_seconds']:.2f} 秒")
     print(f"Top-1: {summary['top1_accuracy']:.1%}")
+    print(f"Hit@3: {summary['hit_at_3']:.1%}")
     print(f"Recall@3: {summary['recall_at_3']:.1%}")
     print(f"MRR: {summary['mrr']:.4f}")
+    print(f"nDCG@3: {summary['ndcg_at_3']:.4f}")
     print(f"平均领先分差: {summary['mean_margin']:.6f}")
     print("\n逐方向:")
     for direction, values in result["by_direction"].items():
         print(
             f"  {direction}: Top-1={values['top1_accuracy']:.1%}, "
-            f"MRR={values['mrr']:.4f}, margin={values['mean_margin']:.6f}"
+            f"nDCG@3={values['ndcg_at_3']:.4f}, "
+            f"margin={values['mean_margin']:.6f}"
+        )
+    print("\n逐难度类型:")
+    for category, values in result["by_category"].items():
+        print(
+            f"  {category}: Top-1={values['top1_accuracy']:.1%}, "
+            f"nDCG@3={values['ndcg_at_3']:.4f}, "
+            f"margin={values['mean_margin']:.6f}"
         )
     print("\n失败案例:")
     failures = [item for item in result["cases"] if item.get("top1") is False]

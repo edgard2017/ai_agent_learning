@@ -186,10 +186,10 @@ python -m tests.embedding_similarity_demo
 正确地把 RS-232 通信排在第一、天气排在最后；中文组却把天气排在第一，说明这个模型
 不适合直接用于当前中文海洋设备资料。
 
-因此当前正式 `search_ocean_documents` 仍使用关键词检索。随后已使用统一领域测试集比较
-Qwen3-Embedding-0.6B、BGE-M3、multilingual-e5-large-instruct 和 Nomic v2；四者的
-10 个有答案案例均正确，但 BGE-M3 的总体领先分差最好，Qwen3 在中文问题检索英文资料
-方向最好。完整方法、限制和逐模型结果见 [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md)。
+因此当前正式 `search_ocean_documents` 仍使用关键词检索。随后已使用40题困难领域测试集
+比较 Qwen3-Embedding-0.6B、BGE-M3、multilingual-e5-large-instruct 和 Nomic v2。
+Qwen3 的32个有答案问题 Top-1为96.9%，另外三个为87.5%～93.8%；四个模型的正确资料
+都进入前三。完整方法、限制和逐模型结果见 [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md)。
 
-目前仍未把 Embedding 接入正式 RAG：测试集规模较小，需要继续增加真实问题和无答案
-案例后，再实现关键词 + 向量的混合检索。
+目前仍未把 Embedding 接入正式 RAG。无答案测试证明相似度阈值不能判断片段是否真正
+包含答案；下一步应实现“型号/关键词约束 + Qwen3向量召回Top-3 + 重排/证据判断”的混合检索。

@@ -1,0 +1,292 @@
+{
+  "description": "在基础集上增加口语、错别字、中英混写、硬负例、多正确答案和无答案查询。",
+  "extends": "ocean_embedding_cases.json",
+  "documents": [
+    {
+      "id": "sbe19-sampling-en",
+      "language": "en",
+      "text": "The SBE 19plus V2 samples at 4 Hz with a strain-gauge pressure sensor and at 2 Hz with a quartz pressure sensor."
+    },
+    {
+      "id": "sbe19-sampling-zh",
+      "language": "zh",
+      "text": "SBE 19plus V2 配应变式压力传感器时采样率为4 Hz，配石英压力传感器时为2 Hz。"
+    },
+    {
+      "id": "sbe19-power-en",
+      "language": "en",
+      "text": "The SBE 19plus V2 uses nine alkaline D cells and provides approximately 60 hours of profiling operation."
+    },
+    {
+      "id": "sbe19-power-zh",
+      "language": "zh",
+      "text": "SBE 19plus V2 使用9节碱性D型电池，剖面工作时间约为60小时。"
+    },
+    {
+      "id": "sbe16-depth-en",
+      "language": "en",
+      "text": "SBE 16plus V2 housing options include a 600 meter plastic housing and a 10500 meter titanium housing."
+    },
+    {
+      "id": "sbe16-depth-zh",
+      "language": "zh",
+      "text": "SBE 16plus V2 提供600米塑料壳体和10500米钛合金壳体配置。"
+    },
+    {
+      "id": "sbe16-expansion-en",
+      "language": "en",
+      "text": "SBE 16plus V2 provides six A/D channels and one RS-232 auxiliary channel for sensor expansion."
+    },
+    {
+      "id": "sbe16-expansion-zh",
+      "language": "zh",
+      "text": "SBE 16plus V2 提供6个A/D通道和1个RS-232辅助通道，用于扩展传感器。"
+    },
+    {
+      "id": "sbe37-options-en",
+      "language": "en",
+      "text": "Conductivity and temperature are standard on the SBE 37 MicroCAT, while pressure and dissolved oxygen are optional."
+    },
+    {
+      "id": "sbe37-options-zh",
+      "language": "zh",
+      "text": "SBE 37 MicroCAT 标配电导率和温度，压力与溶解氧属于选配参数。"
+    },
+    {
+      "id": "rbr-sampling-en",
+      "language": "en",
+      "text": "The RBRconcerto3 C.T.D has a standard sampling rate of 2 Hz and supports up to 32 Hz with an optional configuration."
+    },
+    {
+      "id": "rbr-sampling-zh",
+      "language": "zh",
+      "text": "RBRconcerto3 C.T.D 标准采样率为2 Hz，选配配置最高支持32 Hz。"
+    }
+  ],
+  "cases": [
+    {
+      "id": "stress-zh-en-sbe19-strain-rate",
+      "direction": "zh_to_en",
+      "category": "paraphrase",
+      "query": "19plus装应变压力探头的时候一秒记录几次？",
+      "candidate_ids": ["sbe19-sampling-en", "sbe19-power-en", "sbe19-depth-en", "sbe19-interface-en", "rbr-sampling-en", "sbe16-sampling-en"],
+      "relevant_ids": ["sbe19-sampling-en"]
+    },
+    {
+      "id": "stress-en-zh-sbe19-quartz-rate",
+      "direction": "en_to_zh",
+      "category": "paraphrase",
+      "query": "How often does the instrument record when the 19plus uses a quartz pressure sensor?",
+      "candidate_ids": ["sbe19-sampling-zh", "sbe19-power-zh", "sbe19-depth-zh", "rbr-sampling-zh", "sbe16-sampling-zh", "sbe16-pressure-zh"],
+      "relevant_ids": ["sbe19-sampling-zh"]
+    },
+    {
+      "id": "stress-zh-en-sbe19-endurance",
+      "direction": "zh_to_en",
+      "category": "paraphrase",
+      "query": "SeaCAT做剖面连续工作大概能撑多久，用什么电池？",
+      "candidate_ids": ["sbe19-power-en", "rbr-power-en", "sbe19-sampling-en", "sbe19-depth-en", "sbe16-depth-en", "weather-en"],
+      "relevant_ids": ["sbe19-power-en"]
+    },
+    {
+      "id": "stress-en-zh-sbe19-battery",
+      "direction": "en_to_zh",
+      "category": "paraphrase",
+      "query": "What batteries give the profiling SeaCAT roughly sixty hours of operation?",
+      "candidate_ids": ["sbe19-power-zh", "rbr-power-zh", "sbe19-sampling-zh", "sbe16-depth-zh", "rbr-depth-zh", "weather-zh"],
+      "relevant_ids": ["sbe19-power-zh"]
+    },
+    {
+      "id": "stress-zh-en-sbe16-deep-housing",
+      "direction": "zh_to_en",
+      "category": "paraphrase",
+      "query": "长期固定站那款SeaCAT要去一万米，应选哪种外壳？",
+      "candidate_ids": ["sbe16-depth-en", "sbe19-depth-en", "rbr-depth-en", "sbe16-sampling-en", "sbe16-expansion-en", "weather-en"],
+      "relevant_ids": ["sbe16-depth-en"]
+    },
+    {
+      "id": "stress-en-zh-sbe16-shallow-housing",
+      "direction": "en_to_zh",
+      "category": "paraphrase",
+      "query": "Which SBE 16plus housing is specified for a 600 m deployment?",
+      "candidate_ids": ["sbe16-depth-zh", "sbe19-depth-zh", "rbr-depth-zh", "sbe16-sampling-zh", "sbe16-expansion-zh", "weather-zh"],
+      "relevant_ids": ["sbe16-depth-zh"]
+    },
+    {
+      "id": "stress-mixed-en-sbe19-quartz",
+      "direction": "mixed_to_en",
+      "category": "mixed_abbreviation",
+      "query": "19+ V2 配 quartz pressure 是几 Hz？",
+      "candidate_ids": ["sbe19-sampling-en", "rbr-sampling-en", "sbe19-interface-en", "sbe19-depth-en", "sbe16-sampling-en", "rbr-power-en"],
+      "relevant_ids": ["sbe19-sampling-en"]
+    },
+    {
+      "id": "stress-mixed-en-sbe16-ad",
+      "direction": "mixed_to_en",
+      "category": "mixed_abbreviation",
+      "query": "16plus 有几个 ADC channels 可以接 auxiliary sensors？",
+      "candidate_ids": ["sbe16-expansion-en", "sbe16-sampling-en", "sbe16-depth-en", "sbe19-interface-en", "rbr-interface-en", "sbe37-options-en"],
+      "relevant_ids": ["sbe16-expansion-en"]
+    },
+    {
+      "id": "stress-mixed-en-rbr-fast",
+      "direction": "mixed_to_en",
+      "category": "mixed_abbreviation",
+      "query": "RBR CTD fast mode 能到32赫兹吗？",
+      "candidate_ids": ["rbr-sampling-en", "rbr-power-en", "rbr-depth-en", "rbr-interface-en", "sbe19-sampling-en", "sbe16-sampling-en"],
+      "relevant_ids": ["rbr-sampling-en"]
+    },
+    {
+      "id": "stress-mixed-zh-microcat-o2",
+      "direction": "mixed_to_zh",
+      "category": "mixed_abbreviation",
+      "query": "MicroCAT 的 O2 sensor 是 standard 还是 optional？",
+      "candidate_ids": ["sbe37-options-zh", "sbe16-pressure-zh", "sbe16-expansion-zh", "rbr-sampling-zh", "sbe19-power-zh", "weather-zh"],
+      "relevant_ids": ["sbe37-options-zh"]
+    },
+    {
+      "id": "stress-noisy-zh-rbr-sampling",
+      "direction": "zh_to_zh",
+      "category": "noisy_typo",
+      "query": "RBR conerto3 的采洋频率最高多少？",
+      "candidate_ids": ["rbr-sampling-zh", "rbr-depth-zh", "rbr-power-zh", "rbr-interface-zh", "sbe19-sampling-zh", "sbe16-sampling-zh"],
+      "relevant_ids": ["rbr-sampling-zh"]
+    },
+    {
+      "id": "stress-noisy-zh-sbe16-depth",
+      "direction": "zh_to_zh",
+      "category": "noisy_typo",
+      "query": "SBE 16plsu 钛壳最大水生是多少？",
+      "candidate_ids": ["sbe16-depth-zh", "sbe19-depth-zh", "rbr-depth-zh", "sbe16-sampling-zh", "sbe16-expansion-zh", "weather-zh"],
+      "relevant_ids": ["sbe16-depth-zh"]
+    },
+    {
+      "id": "stress-noisy-zh-sbe19-power",
+      "direction": "zh_to_zh",
+      "category": "noisy_typo",
+      "query": "19plus V2 是用九节D点池吗？",
+      "candidate_ids": ["sbe19-power-zh", "rbr-power-zh", "sbe19-sampling-zh", "sbe19-depth-zh", "sbe16-depth-zh", "weather-zh"],
+      "relevant_ids": ["sbe19-power-zh"]
+    },
+    {
+      "id": "stress-noisy-zh-microcat-pressure",
+      "direction": "zh_to_zh",
+      "category": "noisy_typo",
+      "query": "MicroCAT 的压利是不是标配？",
+      "candidate_ids": ["sbe37-options-zh", "sbe16-pressure-zh", "rbr-depth-zh", "sbe19-depth-zh", "sbe16-expansion-zh", "weather-zh"],
+      "relevant_ids": ["sbe37-options-zh"]
+    },
+    {
+      "id": "stress-hard-sbe19-vs-sbe16-depth",
+      "direction": "zh_to_en",
+      "category": "hard_negative",
+      "query": "做剖面观测的SBE 19plus有哪些不同耐压壳体？",
+      "candidate_ids": ["sbe19-depth-en", "sbe16-depth-en", "rbr-depth-en", "sbe19-sampling-en", "sbe19-power-en", "sbe19-interface-en"],
+      "relevant_ids": ["sbe19-depth-en"]
+    },
+    {
+      "id": "stress-hard-sbe16-interface-vs-sampling",
+      "direction": "en_to_zh",
+      "category": "hard_negative",
+      "query": "Which passage explains expansion channels rather than sampling intervals for the SBE 16plus?",
+      "candidate_ids": ["sbe16-expansion-zh", "sbe16-sampling-zh", "sbe16-pressure-zh", "sbe16-depth-zh", "sbe19-interface-zh", "rbr-interface-zh"],
+      "relevant_ids": ["sbe16-expansion-zh"]
+    },
+    {
+      "id": "stress-hard-rbr-rate-vs-power",
+      "direction": "zh_to_en",
+      "category": "hard_negative",
+      "query": "我要找RBR的每秒采集次数，不是电压或通信参数。",
+      "candidate_ids": ["rbr-sampling-en", "rbr-power-en", "rbr-interface-en", "rbr-depth-en", "sbe19-sampling-en", "sbe16-sampling-en"],
+      "relevant_ids": ["rbr-sampling-en"]
+    },
+    {
+      "id": "stress-hard-microcat-options",
+      "direction": "en_to_zh",
+      "category": "hard_negative",
+      "query": "Find the MicroCAT passage about standard versus optional measurements, not housing depth.",
+      "candidate_ids": ["sbe37-options-zh", "sbe16-pressure-zh", "sbe19-depth-zh", "sbe16-depth-zh", "rbr-depth-zh", "sbe16-expansion-zh"],
+      "relevant_ids": ["sbe37-options-zh"]
+    },
+    {
+      "id": "stress-multi-rs232-en",
+      "direction": "zh_to_en",
+      "category": "multiple_relevant",
+      "query": "哪些英文资料提到设备可以用RS-232通信？",
+      "candidate_ids": ["sbe19-interface-en", "rbr-interface-en", "sbe19-depth-en", "rbr-power-en", "sbe16-sampling-en", "weather-en"],
+      "relevant_ids": ["sbe19-interface-en", "rbr-interface-en"]
+    },
+    {
+      "id": "stress-multi-optional-pressure-zh",
+      "direction": "zh_to_zh",
+      "category": "multiple_relevant",
+      "query": "找出所有明确说明压力属于选配的资料。",
+      "candidate_ids": ["sbe16-pressure-zh", "sbe37-options-zh", "sbe19-depth-zh", "rbr-depth-zh", "sbe16-expansion-zh", "weather-zh"],
+      "relevant_ids": ["sbe16-pressure-zh", "sbe37-options-zh"]
+    },
+    {
+      "id": "stress-multi-sbe19-operation-en",
+      "direction": "zh_to_en",
+      "category": "multiple_relevant",
+      "query": "同时找出SBE 19plus续航和压力传感器采样速度的英文资料。",
+      "candidate_ids": ["sbe19-power-en", "sbe19-sampling-en", "sbe19-depth-en", "sbe19-interface-en", "rbr-power-en", "rbr-sampling-en"],
+      "relevant_ids": ["sbe19-power-en", "sbe19-sampling-en"]
+    },
+    {
+      "id": "stress-multi-rbr-power-rate-en",
+      "direction": "zh_to_en",
+      "category": "multiple_relevant",
+      "query": "我要RBRconcerto3供电方式和最高采样率两方面的英文资料。",
+      "candidate_ids": ["rbr-power-en", "rbr-sampling-en", "rbr-interface-en", "rbr-depth-en", "sbe19-power-en", "sbe19-sampling-en"],
+      "relevant_ids": ["rbr-power-en", "rbr-sampling-en"]
+    },
+    {
+      "id": "stress-noanswer-sbe19-dimensions",
+      "direction": "zh_to_en_no_answer",
+      "category": "no_answer",
+      "query": "SBE 19plus V2的外形尺寸和裸机重量是多少？",
+      "candidate_ids": ["sbe19-depth-en", "sbe19-interface-en", "sbe19-sampling-en", "sbe19-power-en", "rbr-depth-en", "weather-en"],
+      "relevant_ids": []
+    },
+    {
+      "id": "stress-noanswer-rbr-bluetooth",
+      "direction": "en_to_zh_no_answer",
+      "category": "no_answer",
+      "query": "How do I pair the RBRconcerto3 with a phone over Bluetooth?",
+      "candidate_ids": ["rbr-interface-zh", "rbr-power-zh", "rbr-sampling-zh", "rbr-depth-zh", "sbe19-interface-zh", "weather-zh"],
+      "relevant_ids": []
+    },
+    {
+      "id": "stress-noanswer-sbe16-calibration",
+      "direction": "zh_to_en_no_answer",
+      "category": "no_answer",
+      "query": "请给出SBE 16plus电导率传感器的完整校准流程。",
+      "candidate_ids": ["sbe16-sampling-en", "sbe16-pressure-en", "sbe16-depth-en", "sbe16-expansion-en", "sbe19-sampling-en", "weather-en"],
+      "relevant_ids": []
+    },
+    {
+      "id": "stress-noanswer-microcat-firmware",
+      "direction": "en_to_zh_no_answer",
+      "category": "no_answer",
+      "query": "What firmware version is currently installed on the SBE 37 MicroCAT?",
+      "candidate_ids": ["sbe37-options-zh", "sbe16-pressure-zh", "sbe16-expansion-zh", "sbe19-interface-zh", "rbr-interface-zh", "weather-zh"],
+      "relevant_ids": []
+    },
+    {
+      "id": "stress-noanswer-price",
+      "direction": "zh_to_en_no_answer",
+      "category": "no_answer",
+      "query": "购买一台7000米SBE 19plus的含税价格是多少？",
+      "candidate_ids": ["sbe19-depth-en", "sbe19-power-en", "sbe19-interface-en", "rbr-depth-en", "sbe16-depth-en", "weather-en"],
+      "relevant_ids": []
+    },
+    {
+      "id": "stress-noanswer-warranty",
+      "direction": "en_to_zh_no_answer",
+      "category": "no_answer",
+      "query": "How many years of warranty are included with the RBR CTD?",
+      "candidate_ids": ["rbr-depth-zh", "rbr-power-zh", "rbr-interface-zh", "rbr-sampling-zh", "sbe19-power-zh", "weather-zh"],
+      "relevant_ids": []
+    }
+  ]
+}
