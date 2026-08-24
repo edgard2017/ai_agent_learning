@@ -51,6 +51,8 @@ python3 -m unittest discover -v
 MODEL_PROVIDER=ollama
 OLLAMA_BASE_URL=http://127.0.0.1:11435/v1
 OLLAMA_MODEL=hf.co/unsloth/Qwen3.8-27B-GGUF:UD-Q4_K_M
+OLLAMA_EMBEDDING_BASE_URL=http://127.0.0.1:11435
+OLLAMA_EMBEDDING_MODEL=qwen3-embedding:0.6b
 ```
 
 如需切回 OpenAI，只需修改 `.env`，Agent 和 Tool 代码不用改：
@@ -182,14 +184,19 @@ Tool 返回内容包括：
 python -m tests.embedding_similarity_demo
 ```
 
-当前本机 `nomic-embed-text:latest` 为137M参数，输出768维向量。真实测试中，英文组
-正确地把 RS-232 通信排在第一、天气排在最后；中文组却把天气排在第一，说明这个模型
-不适合直接用于当前中文海洋设备资料。
+最初使用 `nomic-embed-text:latest` 实验时，英文组能正确排序，但中文组把天气排在
+RS-232资料之前，因此没有接入。经过四模型基础测试和40题困难压力测试后，项目默认
+Embedding 已切换为本地 `qwen3-embedding:0.6b`，通过 Ollama `/api/embed` 调用，输出
+1024维向量。
+
+Qwen查询会自动增加海洋设备资料检索任务说明，文档保持原文；这样同一个向量空间可以
+支持中文查中文、中文查英文、英文查中文和英文查英文。真实Ollama测试中，中英文问题
+都将RS-232通信资料排第一、天气资料排最后。
 
 因此当前正式 `search_ocean_documents` 仍使用关键词检索。随后已使用40题困难领域测试集
 比较 Qwen3-Embedding-0.6B、BGE-M3、multilingual-e5-large-instruct 和 Nomic v2。
 Qwen3 的32个有答案问题 Top-1为96.9%，另外三个为87.5%～93.8%；四个模型的正确资料
 都进入前三。完整方法、限制和逐模型结果见 [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md)。
 
-目前仍未把 Embedding 接入正式 RAG。无答案测试证明相似度阈值不能判断片段是否真正
+目前默认Embedding模型和独立语义搜索已经完成切换，但仍未接入正式RAG Tool。无答案测试证明相似度阈值不能判断片段是否真正
 包含答案；下一步应实现“型号/关键词约束 + Qwen3向量召回Top-3 + 重排/证据判断”的混合检索。

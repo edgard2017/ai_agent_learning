@@ -52,7 +52,7 @@ class SettingsTests(unittest.TestCase):
         )
         self.assertEqual(
             settings.ollama_embedding_model,
-            "nomic-embed-text:latest",
+            "qwen3-embedding:0.6b",
         )
 
 

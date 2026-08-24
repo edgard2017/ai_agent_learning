@@ -12,10 +12,15 @@ from .config import Settings, get_settings
 
 EmbeddingInputType = Literal["query", "document"]
 
-INPUT_PREFIXES: dict[EmbeddingInputType, str] = {
+NOMIC_INPUT_PREFIXES: dict[EmbeddingInputType, str] = {
     "query": "search_query: ",
     "document": "search_document: ",
 }
+
+QWEN_QUERY_INSTRUCTION = (
+    "Given a marine equipment technical query, retrieve passages that answer "
+    "the query."
+)
 
 
 class EmbeddingServiceError(RuntimeError):
@@ -29,6 +34,21 @@ class SemanticSearchMatch:
     document_index: int
     document: str
     similarity: float
+
+
+def _format_embedding_input(
+    text: str,
+    *,
+    input_type: EmbeddingInputType,
+    model_name: str,
+) -> str:
+    """按模型要求组织查询和文档输入。"""
+
+    if "qwen3-embedding" in model_name.casefold():
+        if input_type == "query":
+            return f"Instruct: {QWEN_QUERY_INSTRUCTION}\nQuery:{text}"
+        return text
+    return f"{NOMIC_INPUT_PREFIXES[input_type]}{text}"
 
 
 def create_embeddings(
@@ -45,12 +65,17 @@ def create_embeddings(
     cleaned_texts = [text.strip() for text in texts]
     if any(not text for text in cleaned_texts):
         raise ValueError("texts 不能包含空字符串")
-    if input_type not in INPUT_PREFIXES:
+    if input_type not in NOMIC_INPUT_PREFIXES:
         raise ValueError("input_type 必须是 query 或 document")
 
     settings = settings or get_settings()
     prefixed_texts = [
-        f"{INPUT_PREFIXES[input_type]}{text}" for text in cleaned_texts
+        _format_embedding_input(
+            text,
+            input_type=input_type,
+            model_name=settings.ollama_embedding_model,
+        )
+        for text in cleaned_texts
     ]
     payload = json.dumps(
         {

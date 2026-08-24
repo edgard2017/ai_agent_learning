@@ -22,7 +22,7 @@ class EmbeddingSearchTests(unittest.TestCase):
             cosine_similarity([1, 2], [1])
 
     @patch("ocean_agent.embedding_search.urlopen")
-    def test_create_embeddings_calls_local_ollama_with_task_prefix(
+    def test_create_embeddings_formats_qwen_query_with_instruction(
         self, mock_urlopen: MagicMock
     ) -> None:
         response = MagicMock()
@@ -41,7 +41,59 @@ class EmbeddingSearchTests(unittest.TestCase):
         self.assertEqual(vectors, [[0.1, 0.2, 0.3]])
         request = mock_urlopen.call_args.args[0]
         payload = json.loads(request.data.decode("utf-8"))
-        self.assertEqual(payload["model"], "nomic-embed-text:latest")
+        self.assertEqual(payload["model"], "qwen3-embedding:0.6b")
+        self.assertEqual(
+            payload["input"],
+            [
+                "Instruct: Given a marine equipment technical query, retrieve "
+                "passages that answer the query.\nQuery:设备如何连接电脑？"
+            ],
+        )
+
+    @patch("ocean_agent.embedding_search.urlopen")
+    def test_create_embeddings_keeps_qwen_document_unchanged(
+        self, mock_urlopen: MagicMock
+    ) -> None:
+        response = MagicMock()
+        response.read.return_value = json.dumps(
+            {"embeddings": [[0.1, 0.2, 0.3]]}
+        ).encode("utf-8")
+        mock_urlopen.return_value.__enter__.return_value = response
+
+        create_embeddings(
+            ["The instrument communicates through RS-232."],
+            input_type="document",
+            settings=Settings(_env_file=None),
+        )
+
+        request = mock_urlopen.call_args.args[0]
+        payload = json.loads(request.data.decode("utf-8"))
+        self.assertEqual(
+            payload["input"],
+            ["The instrument communicates through RS-232."],
+        )
+
+    @patch("ocean_agent.embedding_search.urlopen")
+    def test_nomic_model_still_uses_search_prefix(
+        self, mock_urlopen: MagicMock
+    ) -> None:
+        response = MagicMock()
+        response.read.return_value = json.dumps(
+            {"embeddings": [[0.1, 0.2, 0.3]]}
+        ).encode("utf-8")
+        mock_urlopen.return_value.__enter__.return_value = response
+
+        create_embeddings(
+            ["设备如何连接电脑？"],
+            input_type="query",
+            settings=Settings(
+                ollama_embedding_model="nomic-embed-text:latest",
+                _env_file=None,
+            ),
+        )
+
+        request = mock_urlopen.call_args.args[0]
+        payload = json.loads(request.data.decode("utf-8"))
         self.assertEqual(payload["input"], ["search_query: 设备如何连接电脑？"])
 
     @patch("ocean_agent.embedding_search.create_embedding")

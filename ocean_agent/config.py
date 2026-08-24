@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://127.0.0.1:11435/v1"
     ollama_model: str = "hf.co/unsloth/Qwen3.8-27B-GGUF:UD-Q4_K_M"
     ollama_embedding_base_url: str = "http://127.0.0.1:11435"
-    ollama_embedding_model: str = "nomic-embed-text:latest"
+    ollama_embedding_model: str = "qwen3-embedding:0.6b"
     openai_api_key: SecretStr | None = None
     openai_model: str = "gpt-5.6-luna"
 
