@@ -502,6 +502,19 @@ Skill 可以包含说明、参考资料、模板以及可选脚本，但通常�
 - 本次没有把 Embedding 接入正式 RAG，避免降低现有中文检索准确率。
 - 下一步应选择并测试中文或多语言 Embedding 模型，再决定是否建立混合检索。
 
+**多语言 Embedding 横向评测**
+
+- 新建独立 Conda 环境 `embedding-benchmark`，避免把 PyTorch 和模型依赖装进正式 Agent 环境。
+- 新增 `benchmarks/ocean_embedding_cases.json`：16 个中英资料片段、10 个有答案问题和2个无答案问题。
+- 测试覆盖中文查英文、英文查中文、中查中、英查英，并使用同产品不同参数作为较难的错误候选。
+- 新增 `benchmarks/run_embedding_benchmark.py`，统一计算 Top-1、Recall@3、MRR、正确答案领先分差和无答案最高分。
+- 在 RTX 4090 上依次实测 Qwen3-Embedding-0.6B、BGE-M3、multilingual-e5-large-instruct 和 Nomic Embed Text v2 MoE。
+- 四个模型的10个有答案案例全部 Top-1 命中；平均领先分差依次为 BGE-M3 0.1406、Qwen3 0.1293、Nomic v2 0.1195、E5 0.0585。
+- 中文问题检索英文资料时，Qwen3 的平均领先分差最高，为0.1602；BGE-M3 的总体表现最均衡，作为下一阶段首选。
+- Nomic v2 需要额外安装 `einops` 并允许加载模型仓库代码，部署复杂度略高于前三者。
+- 新增 `benchmarks/RESULTS.md`，记录本机结果、公开基准、选择理由和测试局限。
+- 当前只有10个有答案案例，尚不足以直接改造正式 RAG；下一步先把领域测试扩展到至少30～50条。
+
 ## 七、问题与错误记录
 
 遇到问题时按照下面格式追加，不要只记录错误信息，还要记录最后是怎样解决的。

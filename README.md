@@ -27,6 +27,11 @@ tests/
 ├── test_tools.py       # 产品查询测试
 ├── test_agent_tools.py # Tool schema 和 Agent 注册测试
 └── test_config.py      # 配置与密钥保护测试
+benchmarks/
+├── ocean_embedding_cases.json  # 中英海洋设备领域测试集
+├── run_embedding_benchmark.py  # 多模型统一评测脚本
+├── RESULTS.md                   # 本机横向测试报告
+└── results/                     # 每个模型的逐案例 JSON 结果
 ```
 
 ## 运行测试
@@ -181,5 +186,10 @@ python -m tests.embedding_similarity_demo
 正确地把 RS-232 通信排在第一、天气排在最后；中文组却把天气排在第一，说明这个模型
 不适合直接用于当前中文海洋设备资料。
 
-因此当前正式 `search_ocean_documents` 仍使用关键词检索。Embedding 实验代码保留，
-下一步用于对比中文或多语言 Embedding 模型；只有通过测试的模型才会接入 RAG。
+因此当前正式 `search_ocean_documents` 仍使用关键词检索。随后已使用统一领域测试集比较
+Qwen3-Embedding-0.6B、BGE-M3、multilingual-e5-large-instruct 和 Nomic v2；四者的
+10 个有答案案例均正确，但 BGE-M3 的总体领先分差最好，Qwen3 在中文问题检索英文资料
+方向最好。完整方法、限制和逐模型结果见 [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md)。
+
+目前仍未把 Embedding 接入正式 RAG：测试集规模较小，需要继续增加真实问题和无答案
+案例后，再实现关键词 + 向量的混合检索。
