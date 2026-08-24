@@ -18,6 +18,7 @@ ocean_agent/
 ├── product_data.py   # 4 条厂家公开产品记录
 ├── document_data.py  # 7 个带来源的技术资料片段
 ├── embedding_search.py # 本地 Embedding 与语义相似度实验
+├── hybrid_search.py  # 关键词与Embedding倒数排名融合
 ├── tools.py          # 产品查询和本地关键词检索
 ├── agent_tools.py    # Agents SDK Tool 包装和 JSON 输出
 ├── agent.py          # Agent、Runner 和命令行入口
@@ -200,3 +201,19 @@ Qwen3 的32个有答案问题 Top-1为96.9%，另外三个为87.5%～93.8%；四
 
 目前默认Embedding模型和独立语义搜索已经完成切换，但仍未接入正式RAG Tool。无答案测试证明相似度阈值不能判断片段是否真正
 包含答案；下一步应实现“型号/关键词约束 + Qwen3向量召回Top-3 + 重排/证据判断”的混合检索。
+
+## 混合检索实验
+
+普通Python函数 `hybrid_search_documents()` 已实现，但尚未替换Agent正在使用的Tool。
+它先保留明确型号过滤，再分别执行关键词检索和Qwen Embedding检索，最后使用RRF
+（Reciprocal Rank Fusion，倒数排名融合）合并两边名次。
+
+运行对照演示：
+
+```bash
+python -m tests.hybrid_search_demo
+```
+
+返回结果同时保留 `keyword_rank`、`embedding_rank`、余弦相似度和融合分数。Embedding
+服务不可用时自动退回关键词检索。RRF只负责资料排序，不使用相似度阈值判断资料是否
+真正包含答案。
