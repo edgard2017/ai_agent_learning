@@ -4,8 +4,9 @@ import json
 
 from agents.decorators import tool
 
+from .hybrid_search import hybrid_search_documents
 from .models import DeploymentType, Product
-from .tools import get_product_spec, search_documents, search_products
+from .tools import get_product_spec, search_products
 
 
 def _parameter_role(product: Product, parameter: str) -> str:
@@ -167,7 +168,11 @@ def search_ocean_documents_data(
 ) -> str:
     """检索本地技术资料片段，并返回带来源的 JSON。"""
 
-    matches = search_documents(query, model_or_id=model_or_id, limit=limit)
+    matches = hybrid_search_documents(
+        query,
+        model_or_id=model_or_id,
+        limit=limit,
+    )
     results = [
         {
             "chunk_id": match.chunk.chunk_id,
@@ -176,7 +181,12 @@ def search_ocean_documents_data(
             "section": match.chunk.section,
             "content": match.chunk.content,
             "source": match.chunk.source.model_dump(mode="json"),
-            "relevance_score": match.score,
+            "retrieval_methods": list(match.retrieval_methods),
+            "keyword_score": match.keyword_score,
+            "keyword_rank": match.keyword_rank,
+            "embedding_similarity": match.embedding_similarity,
+            "embedding_rank": match.embedding_rank,
+            "fused_score": match.fused_score,
         }
         for match in matches
     ]
@@ -187,8 +197,17 @@ def search_ocean_documents_data(
             "message": (
                 "当前本地技术资料没有找到相关片段；请明确说明资料不足，不要凭记忆补写。"
                 if not results
-                else "请只根据返回片段回答，并标明资料标题和来源 URL。"
+                else (
+                    "返回内容只是混合检索候选，不代表片段一定包含问题答案。"
+                    "请逐段核对；只有片段明确支持时才能回答，并标明资料标题和来源 URL；"
+                    "否则必须说明当前资料不足。"
+                )
             ),
+            "retrieval": {
+                "mode": "hybrid_rrf",
+                "candidate_count": len(results),
+                "answer_evidence_status": "requires_content_check",
+            },
         },
         ensure_ascii=False,
     )

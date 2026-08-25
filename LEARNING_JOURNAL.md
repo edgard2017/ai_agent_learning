@@ -548,6 +548,20 @@ Skill 可以包含说明、参考资料、模板以及可选脚本，但通常�
 - 新增 `tests/hybrid_search_demo.py`，可以直接比较关键词结果和混合结果。
 - 真实Qwen测试中，“19plus怎么把数据传到电脑里”由纯关键词无结果改为正确通信片段第1；MicroCAT压力选配资料融合后仍为第1。
 
+### Day 8 — 2026-08-25
+
+**今日主题：将Embedding混合检索接入Agent Tool**
+
+- 保持 `search_ocean_documents` 的Tool名称、参数和Agent注册方式不变，只替换内部检索实现。
+- `search_ocean_documents_data()` 从 `search_documents()` 关键词检索切换到 `hybrid_search_documents()`。
+- Tool JSON新增 `retrieval_methods`、关键词分数/名次、Embedding相似度/名次、RRF融合分数。
+- Tool顶层新增 `retrieval.mode=hybrid_rrf` 和 `answer_evidence_status=requires_content_check`。
+- 由于向量Top-3只是语义相关候选，不保证正文真正回答问题，修改Agent Prompt：必须逐段核对正文，不得从相似主题推断缺失步骤、数值或结论。
+- 新增Tool融合元数据和关键词降级测试，项目自动化测试从50项增加到51项；另有3项评测数据测试，全部通过。
+- 真实Tool调用中，“19plus怎么把数据传到电脑里”返回通信资料为Embedding第1，关键词没有命中。
+- 真实Runner端到端为2轮模型、1次Tool：模型调用混合检索，确认RS-232，同时明确当前资料没有针脚、波特率和具体下载步骤，没有凭记忆补写。
+- 至此Qwen Embedding已真正进入Agent RAG链路；下一步需要为文档向量增加缓存，避免每次查询重复编码全部资料。
+
 ## 七、问题与错误记录
 
 遇到问题时按照下面格式追加，不要只记录错误信息，还要记录最后是怎样解决的。
@@ -564,7 +578,7 @@ Skill 可以包含说明、参考资料、模板以及可选脚本，但通常�
 
 - [x] 里程碑1：单 Agent 能调用至少3个工具
 - [x] 里程碑2：支持多轮会话和运行追踪
-- [x] 里程碑3：建立海洋设备技术资料知识库（第一版本地关键词检索）
+- [x] 里程碑3：建立海洋设备技术资料知识库（关键词 + Qwen Embedding混合检索）
 - [ ] 里程碑4：实现多 Agent 路由和人工审批
 - [ ] 里程碑5：提供 FastAPI 和数据库持久化
 - [ ] 里程碑6：建立至少30条自动评估案例

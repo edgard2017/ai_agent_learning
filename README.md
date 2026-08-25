@@ -1,7 +1,7 @@
 # 海洋设备智能售前与技术服务 Agent（学习项目）
 
-当前已完成第一个本地 RAG 版本：
-**可核验产品数据 + 技术资料片段 + 4个 Agents SDK Tool + 本地 Qwen 单 Agent**。
+当前已完成混合检索 RAG 版本：
+**可核验产品数据 + 技术资料片段 + 关键词/Qwen Embedding融合 + 4个 Agents SDK Tool + 本地 Qwen 单 Agent**。
 
 ## 数据边界
 
@@ -144,23 +144,26 @@ python -m ocean_agent.agent --chat --session-id learning-demo
 这里学习的仍然是 OpenAI Agents SDK：`Agent`、`Runner`、Function Tool 和运行循环没有改变；
 只是把负责理解问题和决定是否调用 Tool 的模型，从 OpenAI 模型替换成了本地 Qwen。
 
-## 本地技术资料检索（第一版 RAG）
+## 本地技术资料检索（混合 RAG）
 
-本项目暂时不使用向量数据库。技术资料先拆成可以独立引用的短片段，再用普通 Python
-关键词检索。Agent 遇到操作、连接、接线、供电、采样设置、维护、校准、故障排查或
-说明书问题时，可以调用 `search_ocean_documents`：
+本项目暂时不使用向量数据库。技术资料先拆成可以独立引用的短片段，再使用普通Python
+关键词检索与本地Qwen Embedding语义检索，通过RRF融合两边排名。Agent遇到操作、连接、
+接线、供电、采样设置、维护、校准、故障排查或说明书问题时，可以调用
+`search_ocean_documents`：
 
 ```bash
 python -m ocean_agent.agent --debug \
   "请查技术资料：SBE 19plus V2 使用什么通信接口，公开资料能否说明具体接线步骤？"
 ```
 
-Tool 返回内容包括：
+Tool返回内容包括：
 
 - 相关资料片段；
 - 产品 ID、章节和资料标题；
 - 厂家来源 URL；
-- 只用于排序的相关度分数。
+- 关键词分数与排名；
+- Embedding相似度与排名；
+- RRF融合分数和实际使用的检索方式。
 
 当前7个片段是对已核验厂家产品页和数据表的中文整理，并非完整产品手册。没有收录的
 校准步骤、故障码或接线细节必须回答“当前资料不足”，不能让模型凭记忆补写。
@@ -168,12 +171,12 @@ Tool 返回内容包括：
 这里的 RAG 可以用一句话理解：
 
 ```text
-用户问题 → 搜索相关资料片段 → 把片段交给模型 → 模型根据片段回答并标明来源
+用户问题 → 关键词/Embedding检索 → RRF融合Top-3 → 模型核对片段 → 回答或说明资料不足
 ```
 
 ## Embedding 相似度实验
 
-项目提供一个独立实验模块，尚未接入正式 Agent：
+项目的Embedding底层模块既可以独立实验，也已经由混合检索接入正式Agent Tool：
 
 - `create_embeddings()`：通过 Ollama 调用本地小模型生成向量。
 - `cosine_similarity()`：计算两个向量的余弦相似度。
@@ -194,19 +197,20 @@ Qwen查询会自动增加海洋设备资料检索任务说明，文档保持原�
 支持中文查中文、中文查英文、英文查中文和英文查英文。真实Ollama测试中，中英文问题
 都将RS-232通信资料排第一、天气资料排最后。
 
-因此当前正式 `search_ocean_documents` 仍使用关键词检索。随后已使用40题困难领域测试集
-比较 Qwen3-Embedding-0.6B、BGE-M3、multilingual-e5-large-instruct 和 Nomic v2。
+随后使用40题困难领域测试集比较 Qwen3-Embedding-0.6B、BGE-M3、
+multilingual-e5-large-instruct 和 Nomic v2。
 Qwen3 的32个有答案问题 Top-1为96.9%，另外三个为87.5%～93.8%；四个模型的正确资料
 都进入前三。完整方法、限制和逐模型结果见 [`benchmarks/RESULTS.md`](benchmarks/RESULTS.md)。
 
-目前默认Embedding模型和独立语义搜索已经完成切换，但仍未接入正式RAG Tool。无答案测试证明相似度阈值不能判断片段是否真正
-包含答案；下一步应实现“型号/关键词约束 + Qwen3向量召回Top-3 + 重排/证据判断”的混合检索。
+默认Embedding模型已经接入正式 `search_ocean_documents` Tool。无答案测试证明相似度
+阈值不能判断片段是否真正包含答案，因此Tool明确把结果标记为“需要核对内容的候选”，
+Agent只有在片段正文直接支持时才能回答，否则必须说明资料不足。
 
 ## 混合检索实验
 
-普通Python函数 `hybrid_search_documents()` 已实现，但尚未替换Agent正在使用的Tool。
-它先保留明确型号过滤，再分别执行关键词检索和Qwen Embedding检索，最后使用RRF
-（Reciprocal Rank Fusion，倒数排名融合）合并两边名次。
+普通Python函数 `hybrid_search_documents()` 已实现，并已接入Agent正在使用的
+`search_ocean_documents` Tool。它先保留明确型号过滤，再分别执行关键词检索和Qwen
+Embedding检索，最后使用RRF（Reciprocal Rank Fusion，倒数排名融合）合并两边名次。
 
 运行对照演示：
 

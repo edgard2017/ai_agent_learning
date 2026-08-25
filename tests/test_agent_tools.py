@@ -1,6 +1,7 @@
 import json
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from agents import OpenAIChatCompletionsModel
 
@@ -16,6 +17,34 @@ from ocean_agent.agent_tools import (
     search_ocean_products_data,
 )
 from ocean_agent.config import Settings
+from ocean_agent.document_data import DOCUMENT_CHUNKS
+from ocean_agent.hybrid_search import HybridDocumentSearchMatch
+
+
+def _hybrid_match(
+    chunk_id: str,
+    *,
+    keyword_rank: int | None = 1,
+    embedding_rank: int | None = 1,
+) -> HybridDocumentSearchMatch:
+    chunk = next(item for item in DOCUMENT_CHUNKS if item.chunk_id == chunk_id)
+    methods = tuple(
+        method
+        for method, rank in (
+            ("keyword", keyword_rank),
+            ("embedding", embedding_rank),
+        )
+        if rank is not None
+    )
+    return HybridDocumentSearchMatch(
+        chunk=chunk,
+        fused_score=0.032787,
+        keyword_score=11 if keyword_rank is not None else None,
+        keyword_rank=keyword_rank,
+        embedding_similarity=0.64 if embedding_rank is not None else None,
+        embedding_rank=embedding_rank,
+        retrieval_methods=methods,
+    )
 
 
 class AgentToolTests(unittest.TestCase):
@@ -110,7 +139,13 @@ class AgentToolTests(unittest.TestCase):
         self.assertEqual(compare_ocean_products.name, "compare_ocean_products")
         self.assertIn("product_ids", compare_ocean_products.params_json_schema["properties"])
 
-    def test_document_tool_returns_citable_chunks(self) -> None:
+    @patch("ocean_agent.agent_tools.hybrid_search_documents")
+    def test_document_tool_returns_citable_hybrid_chunks(
+        self, mock_hybrid_search
+    ) -> None:
+        mock_hybrid_search.return_value = [
+            _hybrid_match("sbe19-interface-sampling")
+        ]
         payload = json.loads(
             search_ocean_documents_data(
                 "通信接口和采样率",
@@ -121,8 +156,24 @@ class AgentToolTests(unittest.TestCase):
         self.assertGreaterEqual(payload["count"], 1)
         self.assertEqual(payload["results"][0]["chunk_id"], "sbe19-interface-sampling")
         self.assertTrue(payload["results"][0]["source"]["url"])
+        self.assertEqual(payload["results"][0]["keyword_rank"], 1)
+        self.assertEqual(payload["results"][0]["embedding_rank"], 1)
+        self.assertEqual(
+            payload["results"][0]["retrieval_methods"],
+            ["keyword", "embedding"],
+        )
+        self.assertEqual(payload["retrieval"]["mode"], "hybrid_rrf")
+        self.assertEqual(
+            payload["retrieval"]["answer_evidence_status"],
+            "requires_content_check",
+        )
+        self.assertIn("不代表", payload["message"])
 
-    def test_document_tool_reports_missing_knowledge(self) -> None:
+    @patch("ocean_agent.agent_tools.hybrid_search_documents")
+    def test_document_tool_reports_missing_knowledge(
+        self, mock_hybrid_search
+    ) -> None:
+        mock_hybrid_search.return_value = []
         payload = json.loads(
             search_ocean_documents_data(
                 "故障码 E999 的维修步骤",
@@ -132,6 +183,22 @@ class AgentToolTests(unittest.TestCase):
 
         self.assertEqual(payload["count"], 0)
         self.assertIn("资料", payload["message"])
+
+    @patch("ocean_agent.agent_tools.hybrid_search_documents")
+    def test_document_tool_exposes_keyword_fallback(
+        self, mock_hybrid_search
+    ) -> None:
+        mock_hybrid_search.return_value = [
+            _hybrid_match(
+                "rbr-ctd-interface-power-sampling",
+                embedding_rank=None,
+            )
+        ]
+
+        payload = json.loads(search_ocean_documents_data("RBR怎么供电？"))
+
+        self.assertEqual(payload["results"][0]["retrieval_methods"], ["keyword"])
+        self.assertIsNone(payload["results"][0]["embedding_similarity"])
 
     def test_document_tool_has_generated_schema(self) -> None:
         self.assertEqual(search_ocean_documents.name, "search_ocean_documents")
