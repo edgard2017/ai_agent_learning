@@ -3,11 +3,16 @@
 from dataclasses import dataclass
 import json
 from math import fsum, sqrt
+from pathlib import Path
 from typing import Literal, Sequence
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from .config import Settings, get_settings
+from .embedding_cache import (
+    DEFAULT_DOCUMENT_EMBEDDING_CACHE,
+    get_or_create_document_embeddings,
+)
 
 
 EmbeddingInputType = Literal["query", "document"]
@@ -155,6 +160,8 @@ def semantic_search(
     *,
     limit: int = 3,
     settings: Settings | None = None,
+    cache_documents: bool = False,
+    cache_path: Path = DEFAULT_DOCUMENT_EMBEDDING_CACHE,
 ) -> list[SemanticSearchMatch]:
     """使用本地 Embedding 模型搜索语义最接近的文本。"""
 
@@ -166,17 +173,30 @@ def semantic_search(
         raise ValueError("limit 必须在 1 到文档数量之间")
 
     settings = settings or get_settings()
-    document_vectors = create_embeddings(
-        documents,
-        input_type="document",
-        settings=settings,
-    )
     query_vector = create_embedding(
         query,
         input_type="query",
         settings=settings,
     )
-
+    if cache_documents:
+        cache_result = get_or_create_document_embeddings(
+            documents,
+            model_name=settings.ollama_embedding_model,
+            create_missing=lambda missing_texts: create_embeddings(
+                missing_texts,
+                input_type="document",
+                settings=settings,
+            ),
+            cache_path=cache_path,
+            expected_dimension=len(query_vector),
+        )
+        document_vectors = cache_result.vectors
+    else:
+        document_vectors = create_embeddings(
+            documents,
+            input_type="document",
+            settings=settings,
+        )
     matches = [
         SemanticSearchMatch(
             document_index=index,

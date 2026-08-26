@@ -18,6 +18,7 @@ ocean_agent/
 ├── product_data.py   # 4 条厂家公开产品记录
 ├── document_data.py  # 7 个带来源的技术资料片段
 ├── embedding_search.py # 本地 Embedding 与语义相似度实验
+├── embedding_cache.py # 按模型和内容哈希缓存文档向量
 ├── hybrid_search.py  # 关键词与Embedding倒数排名融合
 ├── tools.py          # 产品查询和本地关键词检索
 ├── agent_tools.py    # Agents SDK Tool 包装和 JSON 输出
@@ -221,3 +222,16 @@ python -m tests.hybrid_search_demo
 返回结果同时保留 `keyword_rank`、`embedding_rank`、余弦相似度和融合分数。Embedding
 服务不可用时自动退回关键词检索。RRF只负责资料排序，不使用相似度阈值判断资料是否
 真正包含答案。
+
+## 文档向量缓存
+
+混合检索只在首次运行或资料变化时生成文档向量，并将结果保存到
+`.agent_data/document_embeddings.json`。缓存键由Embedding模型名和文档内容SHA-256哈希
+组成：修改一段资料只会重算这一段，切换模型会使用另一组缓存。
+
+缓存文件只包含模型名、文档哈希和向量，不保存用户问题、聊天记录或文档原文；
+`.agent_data/`已被Git忽略。每个新问题仍会实时生成一个查询向量，然后与缓存文档向量
+计算余弦相似度。
+
+当前7段资料真实测试：首次生成7个向量约0.34秒，再次读取7个缓存向量约0.001秒。
+这不是严格性能基准，但能确认第二次检索没有重复请求文档Embedding。

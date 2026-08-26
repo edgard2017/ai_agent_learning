@@ -95,6 +95,7 @@ class HybridDocumentSearchTests(unittest.TestCase):
         )
         documents = mock_semantic_search.call_args.args[1]
         self.assertEqual(len(documents), 2)
+        self.assertTrue(mock_semantic_search.call_args.kwargs["cache_documents"])
 
     @patch("ocean_agent.hybrid_search.semantic_search")
     def test_embedding_failure_falls_back_to_keyword_search(

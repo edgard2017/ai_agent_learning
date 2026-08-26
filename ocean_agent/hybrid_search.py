@@ -88,6 +88,7 @@ def hybrid_search_documents(
             [_embedding_text(chunk) for chunk in candidates],
             limit=len(candidates),
             settings=settings,
+            cache_documents=True,
         )
     except EmbeddingServiceError:
         return [
