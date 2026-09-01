@@ -6,16 +6,31 @@ import json
 from pathlib import Path
 
 from pydantic import ValidationError
+from pypdf import PdfReader
 
 from .models import LoadedDocument, SourceReference
 from .product_data import PRODUCTS
 
 
-SUPPORTED_EXTENSIONS = {".md", ".txt"}
+SUPPORTED_EXTENSIONS = {".md", ".txt", ".pdf"}
 KNOWN_PRODUCT_IDS = {product.product_id for product in PRODUCTS}
 
 
-def load_documents(documents_dir: str | Path) -> tuple[LoadedDocument, ...]:
+def _read_document(file_path: Path) -> tuple[str, tuple[str, ...]]:
+    if file_path.suffix.lower() != ".pdf":
+        content = file_path.read_text(encoding="utf-8").strip()
+        return content, (content,) if content else ()
+
+    reader = PdfReader(file_path)
+    pages = tuple((page.extract_text() or "").strip() for page in reader.pages)
+    return "\n\n".join(page for page in pages if page), pages
+
+
+def load_documents(
+    documents_dir: str | Path,
+    *,
+    manifest_name: str = "manifest.json",
+) -> tuple[LoadedDocument, ...]:
     """根据 documents/manifest.json 读取全部文档。
 
     manifest 保存产品ID、来源等结构化信息，Markdown/TXT 只保存正文，
@@ -23,7 +38,7 @@ def load_documents(documents_dir: str | Path) -> tuple[LoadedDocument, ...]:
     """
 
     root = Path(documents_dir).resolve()
-    manifest_path = root / "manifest.json"
+    manifest_path = root / manifest_name
     if not manifest_path.is_file():
         raise FileNotFoundError(f"找不到文档清单：{manifest_path}")
 
@@ -62,7 +77,7 @@ def load_documents(documents_dir: str | Path) -> tuple[LoadedDocument, ...]:
         if not file_path.is_file():
             raise FileNotFoundError(f"找不到文档：{file_path}")
 
-        content = file_path.read_text(encoding="utf-8").strip()
+        content, pages = _read_document(file_path)
         if not content:
             raise ValueError(f"文档内容为空：{relative_file}")
 
@@ -76,6 +91,7 @@ def load_documents(documents_dir: str | Path) -> tuple[LoadedDocument, ...]:
                 keywords=tuple(entry.get("keywords", ())),
                 source=source,
                 file_path=str(file_path),
+                pages=pages,
             )
         except ValidationError as exc:
             raise ValueError(f"文档元数据无效（第 {index} 项）：{exc}") from exc

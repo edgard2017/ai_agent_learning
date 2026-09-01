@@ -38,7 +38,10 @@ def _split_oversized_text(text: str, max_chars: int) -> list[str]:
     return pieces
 
 
-def _parse_markdown_sections(document: LoadedDocument) -> list[tuple[str, list[str]]]:
+def _parse_markdown_sections(
+    document: LoadedDocument,
+    content: str | None = None,
+) -> list[tuple[str, list[str]]]:
     """将 Markdown 按标题和空行解析为 section + paragraphs。"""
 
     sections: list[tuple[str, list[str]]] = []
@@ -57,7 +60,7 @@ def _parse_markdown_sections(document: LoadedDocument) -> list[tuple[str, list[s
             sections.append((section_name, paragraphs.copy()))
             paragraphs.clear()
 
-    for raw_line in document.content.splitlines():
+    for raw_line in (content if content is not None else document.content).splitlines():
         line = raw_line.strip()
         heading = HEADING_PATTERN.match(line)
         if heading:
@@ -85,20 +88,32 @@ def chunk_document(
     if max_chars < 50:
         raise ValueError("max_chars 不能小于 50")
 
-    pending: list[tuple[str, str]] = []
-    for section, paragraphs in _parse_markdown_sections(document):
-        current = ""
-        for paragraph in paragraphs:
-            for piece in _split_oversized_text(paragraph, max_chars):
-                if not current:
-                    current = piece
-                elif len(current) + 2 + len(piece) <= max_chars:
-                    current = f"{current}\n\n{piece}"
-                else:
-                    pending.append((section, current))
-                    current = piece
-        if current:
-            pending.append((section, current))
+    pending: list[tuple[str, str, int | None]] = []
+    is_pdf = document.file_path.lower().endswith(".pdf")
+    page_inputs = (
+        tuple((f"第 {index} 页", page, index) for index, page in enumerate(document.pages, 1))
+        if is_pdf
+        else ((None, document.content, None),)
+    )
+    for page_section, page_content, page_number in page_inputs:
+        parsed_sections = (
+            [(page_section or document.title, [page_content])]
+            if is_pdf
+            else _parse_markdown_sections(document, page_content)
+        )
+        for section, paragraphs in parsed_sections:
+            current = ""
+            for paragraph in paragraphs:
+                for piece in _split_oversized_text(paragraph, max_chars):
+                    if not current:
+                        current = piece
+                    elif len(current) + 2 + len(piece) <= max_chars:
+                        current = f"{current}\n\n{piece}"
+                    else:
+                        pending.append((section, current, page_number))
+                        current = piece
+            if current:
+                pending.append((section, current, page_number))
 
     return tuple(
         TechnicalDocumentChunk(
@@ -109,8 +124,9 @@ def chunk_document(
             content=content,
             keywords=document.keywords,
             source=document.source,
+            page_number=page_number,
         )
-        for index, (section, content) in enumerate(pending, start=1)
+        for index, (section, content, page_number) in enumerate(pending, start=1)
     )
 
 

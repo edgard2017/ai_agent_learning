@@ -591,6 +591,16 @@ Skill 可以包含说明、参考资料、模板以及可选脚本，但通常�
 - 新增5项自动化测试，项目测试由57项增加到62项，全部通过。
 - 本次只完成“文件 → 文档 → Chunk”；尚未把自动Chunk接入Qwen Embedding、混合检索或Agent，下一步再完成该连接。
 
+**补充：接入厂家公开PDF资料**
+
+- 核验Sea-Bird与RBR官网资源链接，新增可重复执行的 `official_manifest.json` 下载清单。
+- 新增 `document_downloader.py`，支持直接PDF和官方ZIP内指定PDF，下载后用SHA-256校验，已有正确文件不会重复下载。
+- 厂家原始PDF保存在Git忽略的 `documents/raw/`，仓库只保存来源、版本、哈希和下载代码，不重新发布第三方版权文件。
+- `document_loader.py`新增PDF支持，使用pypdf逐页提取文字；自动Chunk新增 `page_number`，回答时可以追溯到具体PDF页码。
+- 实际下载并验证SBE 19plus V2数据表、72页用户手册和34页RBR CT/CTD Instrument Guide，共3份、108页。
+- 以每块最多800字符切分后共生成312个Chunk；这批Chunk尚未生成Embedding，也尚未接入Agent。
+- 新增下载器缓存/HTTPS限制测试，项目自动化测试由62项增加到64项并全部通过。
+
 ## 七、问题与错误记录
 
 遇到问题时按照下面格式追加，不要只记录错误信息，还要记录最后是怎样解决的。

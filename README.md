@@ -235,3 +235,27 @@ python -m tests.hybrid_search_demo
 
 当前7段资料真实测试：首次生成7个向量约0.34秒，再次读取7个缓存向量约0.001秒。
 这不是严格性能基准，但能确认第二次检索没有重复请求文档Embedding。
+
+## 下载和解析厂家公开PDF
+
+`documents/official_manifest.json`记录厂家官方下载地址、产品ID、文档版本和SHA-256。
+厂家PDF保存在被Git忽略的 `documents/raw/`，不把第三方版权文件重新发布到本项目仓库。
+
+首次使用时下载资料：
+
+```bash
+python -m ocean_agent.document_downloader
+```
+
+下载器支持直接PDF和Sea-Bird官方ZIP中的PDF；已下载文件通过SHA-256校验后会直接复用。
+当前清单包含SBE 19plus V2数据表、72页用户手册和34页RBR CT/CTD Instrument Guide。
+
+查看PDF解析与自动切块结果：
+
+```bash
+python -m tests.official_document_demo
+```
+
+PDF Loader使用 `pypdf` 逐页提取文字，Chunk保留原PDF页码。当前阶段已经完成下载、
+校验、解析和切块，但这些自动Chunk尚未替换Agent正在使用的7段人工核验摘要；下一步
+将它们接入Qwen Embedding缓存与混合检索，并增加针对表格和页眉页脚的清洗。

@@ -125,6 +125,7 @@ class TechnicalDocumentChunk(BaseModel):
     content: str
     keywords: tuple[str, ...] = ()
     source: SourceReference
+    page_number: int | None = Field(default=None, ge=1)
 
 
 class LoadedDocument(BaseModel):
@@ -139,3 +140,4 @@ class LoadedDocument(BaseModel):
     keywords: tuple[str, ...] = ()
     source: SourceReference
     file_path: str
+    pages: tuple[str, ...] = ()

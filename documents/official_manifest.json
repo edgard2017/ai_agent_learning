@@ -1,0 +1,57 @@
+{
+  "documents": [
+    {
+      "document_id": "sbe19plus-v2-datasheet-may25",
+      "file": "raw/sbe19plus-v2-datasheet-may25.pdf",
+      "download_url": "https://www.seabird.com/hubfs/Product%20Assets/SBE%2019plus%20V2%20SeaCAT/Datasheet/SBE%2019plus%20SeaCAT_V2DS53May25.pdf?hsLang=en",
+      "sha256": "998d89b291ab8301d80f9d3a44ec25f5604cc9fb2533cac1d3c2bb26be85e0f3",
+      "product_id": "seabird-sbe-19plus-v2",
+      "title": "SBE 19plus V2 SeaCAT Datasheet",
+      "keywords": ["SBE 19plus V2", "SeaCAT", "CTD", "RS-232", "sampling", "depth"],
+      "source": {
+        "title": "SBE 19plus V2 SeaCAT Datasheet",
+        "url": "https://www.seabird.com/hubfs/Product%20Assets/SBE%2019plus%20V2%20SeaCAT/Datasheet/SBE%2019plus%20SeaCAT_V2DS53May25.pdf?hsLang=en",
+        "source_type": "manufacturer_official",
+        "accessed_on": "2026-09-01",
+        "document_version": "19plus V2.DS.53.May25",
+        "verification_status": "verified"
+      }
+    },
+    {
+      "document_id": "sbe19plus-v2-user-manual-revh",
+      "file": "raw/sbe19plus-v2-user-manual-revh.pdf",
+      "download_url": "https://www.seabird.com/hubfs/Product%20Assets/SBE%2019plus%20V2%20SeaCAT/Manuals/SBE%2019plus%20V2%20User%20Manuals_Jan-2026.zip?hsLang=en",
+      "archive_member": "Product Assets/SBE 19plus V2 SeaCAT/Manuals/19plus_V2_SeaCAT318_revH.pdf",
+      "archive_sha256": "0aac59f459dc6da4cd2f81a7e0b3c24999e253607eea8313283f507532ba70ab",
+      "sha256": "7777401eba83c0be2622b55cc334e1db0bab8895257493a04b6bc533e9498384",
+      "product_id": "seabird-sbe-19plus-v2",
+      "title": "SBE 19plus V2 SeaCAT User Manual",
+      "keywords": ["SBE 19plus V2", "SeaCAT", "user manual", "commands", "deployment", "maintenance"],
+      "source": {
+        "title": "SBE 19plus V2 SeaCAT User Manual",
+        "url": "https://www.seabird.com/hubfs/Product%20Assets/SBE%2019plus%20V2%20SeaCAT/Manuals/SBE%2019plus%20V2%20User%20Manuals_Jan-2026.zip?hsLang=en",
+        "source_type": "manufacturer_official",
+        "accessed_on": "2026-09-01",
+        "document_version": "318 rev H",
+        "verification_status": "verified"
+      }
+    },
+    {
+      "document_id": "rbr-ct-ctd-instrument-guide-revf",
+      "file": "raw/rbr-ct-ctd-instrument-guide-revf.pdf",
+      "download_url": "https://rbr-global.com/wp-content/uploads/2025/03/RBR-CT-and-CTD-Instruments-RIG-0013236revF.pdf",
+      "sha256": "f4025697b980c9c6ea368fd843c1e83d1116fddc008d9f8a96ba8f4f5bb4f9ed",
+      "product_id": "rbr-concerto3-ctd",
+      "title": "RBR CT and CTD Instruments Guide",
+      "keywords": ["RBRconcerto3", "CTD", "Ruskin", "USB-C", "RS-232", "RS-485", "maintenance"],
+      "source": {
+        "title": "RBR CT and CTD Instruments Guide",
+        "url": "https://rbr-global.com/wp-content/uploads/2025/03/RBR-CT-and-CTD-Instruments-RIG-0013236revF.pdf",
+        "source_type": "manufacturer_official",
+        "accessed_on": "2026-09-01",
+        "document_version": "RBR#0013236revF",
+        "verification_status": "verified"
+      }
+    }
+  ]
+}
