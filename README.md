@@ -257,5 +257,22 @@ python -m tests.official_document_demo
 ```
 
 PDF Loader使用 `pypdf` 逐页提取文字，Chunk保留原PDF页码。当前阶段已经完成下载、
-校验、解析和切块，但这些自动Chunk尚未替换Agent正在使用的7段人工核验摘要；下一步
-将它们接入Qwen Embedding缓存与混合检索，并增加针对表格和页眉页脚的清洗。
+校验、解析、清洗和持久化，但这些自动Chunk尚未替换Agent正在使用的7段人工核验摘要。
+
+生成清洗后的逐页文本和Chunk JSON：
+
+```bash
+python -m ocean_agent.build_document_chunks
+```
+
+本地生成物为：
+
+```text
+.agent_data/cleaned_documents/*.json  # 每页原文、清洗文本、动作和审核状态
+.agent_data/document_chunks.json      # 最终Chunk、来源、页码、哈希和前后关系
+```
+
+当前3份PDF共108页：排除6页目录/空页、删除18个完全重复Chunk，最终生成332个Chunk；
+其中11个针脚表或读取顺序可疑的操作步骤标记为 `needs_review`。构建器会修复换行断词、
+小数/域名拆分、重复页眉页脚、单独页码、点线和PDF私有字符，但不会猜测表格列关系或
+重新排列错乱步骤。图片尚未进入本轮文字Chunk，后续将单独提取并与页码和文字Chunk关联。

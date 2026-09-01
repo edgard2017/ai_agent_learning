@@ -4,17 +4,42 @@ from __future__ import annotations
 
 import re
 
+from .document_cleaner import looks_like_pdf_heading
 from .models import LoadedDocument, TechnicalDocumentChunk
 
 
 HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
-SENTENCE_BOUNDARY = re.compile(r"(?<=[。！？.!?；;])")
+SENTENCE_BOUNDARY = re.compile(
+    r"(?<=[。！？!?；;])|(?<=\.)\s+(?=[A-Z0-9“\"(])"
+)
+PROTECTED_PERIOD = "\ue000"
 
 
 def _split_oversized_text(text: str, max_chars: int) -> list[str]:
     """优先按句子拆分；单句仍太长时才按字符硬切。"""
 
-    sentences = [item.strip() for item in SENTENCE_BOUNDARY.split(text) if item.strip()]
+    protected = re.sub(
+        r"\b(?:[A-Z]\.(?:\s*|$)){2,}",
+        lambda match: match.group().replace(".", PROTECTED_PERIOD),
+        text,
+    )
+    protected = re.sub(
+        r"(?<=\d)\.(?=\d)|(?<=\w)\.(?=(?:com|org|net)\b)",
+        PROTECTED_PERIOD,
+        protected,
+        flags=re.I,
+    )
+    protected = re.sub(
+        r"\b(?:No|Fig|Eq|Rev)\.",
+        lambda match: match.group().replace(".", PROTECTED_PERIOD),
+        protected,
+        flags=re.I,
+    )
+    sentences = [
+        item.strip().replace(PROTECTED_PERIOD, ".")
+        for item in SENTENCE_BOUNDARY.split(protected)
+        if item.strip()
+    ]
     pieces: list[str] = []
     current = ""
     for sentence in sentences:
@@ -90,17 +115,33 @@ def chunk_document(
 
     pending: list[tuple[str, str, int | None]] = []
     is_pdf = document.file_path.lower().endswith(".pdf")
+    current_pdf_section = document.title
     page_inputs = (
         tuple((f"第 {index} 页", page, index) for index, page in enumerate(document.pages, 1))
         if is_pdf
         else ((None, document.content, None),)
     )
     for page_section, page_content, page_number in page_inputs:
-        parsed_sections = (
-            [(page_section or document.title, [page_content])]
-            if is_pdf
-            else _parse_markdown_sections(document, page_content)
-        )
+        if is_pdf:
+            parsed_sections: list[tuple[str, list[str]]] = []
+            section = current_pdf_section
+            section_lines: list[str] = []
+            for paragraph in page_content.split("\n\n"):
+                paragraph = paragraph.strip()
+                if not paragraph:
+                    continue
+                if looks_like_pdf_heading(paragraph):
+                    if section_lines:
+                        parsed_sections.append((section, section_lines.copy()))
+                        section_lines.clear()
+                    section = paragraph
+                    current_pdf_section = paragraph
+                else:
+                    section_lines.append(paragraph)
+            if section_lines:
+                parsed_sections.append((section, section_lines))
+        else:
+            parsed_sections = _parse_markdown_sections(document, page_content)
         for section, paragraphs in parsed_sections:
             current = ""
             for paragraph in paragraphs:
@@ -125,6 +166,7 @@ def chunk_document(
             keywords=document.keywords,
             source=document.source,
             page_number=page_number,
+            document_id=document.document_id,
         )
         for index, (section, content, page_number) in enumerate(pending, start=1)
     )

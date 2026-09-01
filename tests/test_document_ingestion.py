@@ -3,7 +3,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ocean_agent.document_chunker import chunk_document, chunk_documents
+from ocean_agent.document_chunker import (
+    _split_oversized_text,
+    chunk_document,
+    chunk_documents,
+)
 from ocean_agent.document_loader import load_documents
 
 
@@ -67,6 +71,18 @@ class DocumentChunkerTests(unittest.TestCase):
     def test_rejects_unreasonably_small_chunk_size(self) -> None:
         with self.assertRaisesRegex(ValueError, "不能小于 50"):
             chunk_document(self.document, max_chars=20)
+
+    def test_english_sentence_split_preserves_domains_decimals_and_acronyms(self) -> None:
+        text = (
+            "Visit seabird.com at 4.5 V. "
+            "The C.T.D. instrument uses RS-232. Continue with setup."
+        )
+        pieces = _split_oversized_text(text, max_chars=60)
+        rebuilt = " ".join(pieces)
+
+        self.assertIn("seabird.com", rebuilt)
+        self.assertIn("4.5 V", rebuilt)
+        self.assertIn("C.T.D.", rebuilt)
 
 
 if __name__ == "__main__":

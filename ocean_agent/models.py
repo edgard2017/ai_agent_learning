@@ -126,6 +126,13 @@ class TechnicalDocumentChunk(BaseModel):
     keywords: tuple[str, ...] = ()
     source: SourceReference
     page_number: int | None = Field(default=None, ge=1)
+    document_id: str | None = Field(default=None, pattern=r"^[a-z0-9-]+$")
+    chunk_type: str = "text"
+    previous_chunk_id: str | None = Field(default=None, pattern=r"^[a-z0-9-]+$")
+    next_chunk_id: str | None = Field(default=None, pattern=r"^[a-z0-9-]+$")
+    content_hash: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    cleaning_actions: tuple[str, ...] = ()
+    review_status: str = "not_reviewed"
 
 
 class LoadedDocument(BaseModel):
