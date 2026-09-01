@@ -1,0 +1,19 @@
+{
+  "documents": [
+    {
+      "document_id": "sbe19plus-v2-project-summary",
+      "file": "sbe19plus-v2-summary.md",
+      "product_id": "seabird-sbe-19plus-v2",
+      "title": "SBE 19plus V2 SeaCAT 公开资料整理摘要",
+      "keywords": ["SBE 19plus V2", "SeaCAT", "CTD", "RS-232", "采样", "工作深度"],
+      "source": {
+        "title": "SBE 19plus V2 SeaCAT CTD product page",
+        "url": "https://www.seabird.com/products/sbe-19plus-v2-seacat-ctd",
+        "source_type": "manufacturer_official",
+        "accessed_on": "2026-08-19",
+        "document_version": null,
+        "verification_status": "verified"
+      }
+    }
+  ]
+}

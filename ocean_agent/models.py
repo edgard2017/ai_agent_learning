@@ -125,3 +125,17 @@ class TechnicalDocumentChunk(BaseModel):
     content: str
     keywords: tuple[str, ...] = ()
     source: SourceReference
+
+
+class LoadedDocument(BaseModel):
+    """从文件读取、但尚未切块的一份技术资料。"""
+
+    model_config = ConfigDict(frozen=True)
+
+    document_id: str = Field(pattern=r"^[a-z0-9-]+$")
+    product_id: str = Field(pattern=r"^[a-z0-9-]+$")
+    title: str
+    content: str
+    keywords: tuple[str, ...] = ()
+    source: SourceReference
+    file_path: str
