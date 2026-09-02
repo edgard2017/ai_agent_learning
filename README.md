@@ -276,3 +276,32 @@ python -m ocean_agent.build_document_chunks
 其中11个针脚表或读取顺序可疑的操作步骤标记为 `needs_review`。构建器会修复换行断词、
 小数/域名拆分、重复页眉页脚、单独页码、点线和PDF私有字符，但不会猜测表格列关系或
 重新排列错乱步骤。图片尚未进入本轮文字Chunk，后续将单独提取并与页码和文字Chunk关联。
+
+## 真实手册Embedding索引
+
+为332个正式Chunk生成Qwen Embedding：
+
+```bash
+python -m ocean_agent.manual_embedding_index
+```
+
+构建器先校验Chunk数量、正文哈希和邻居ID，再将“资料标题 + 章节 + 正文”分批发送给
+`qwen3-embedding:0.6b`。页码、审核状态等元数据不转向量，但会随搜索结果返回。
+
+本地生成物：
+
+```text
+.agent_data/document_embeddings.json    # 1024维向量缓存，不含文档原文
+.agent_data/manual_embedding_index.json # Chunk ID与Embedding文本哈希映射
+```
+
+真实构建中，第一次生成332个向量约7.71秒，缓存约4.5MB；第二次332个全部命中缓存，
+约0.037秒。运行中英文检索演示：
+
+```bash
+python -m tests.manual_embedding_search_demo
+```
+
+当前演示验证了SBE数据上传、RBR MCBH针脚、O型圈更换和USB-C采样供电问题；关键证据
+均进入Top-3。正式手册索引尚未接入Agent，下一步需要加入关键词融合、Top-20初选、
+重排、结果多样性和相邻Chunk扩展。

@@ -617,6 +617,22 @@ Skill 可以包含说明、参考资料、模板以及可选脚本，但通常�
 - 新增7项清洗/构建相关测试，项目自动化测试由64项增加到71项，全部通过。
 - 本次尚未处理PDF图片、生成332个Embedding或将新知识库接入Agent；下一步先提取并关联图片，或在明确文本评测集后生成Embedding。
 
+### Day 12 — 2026-09-02
+
+**今日主题：为332个真实手册Chunk生成Qwen Embedding**
+
+- 新增 `document_chunk_store.py`，读取 `.agent_data/document_chunks.json`，校验Schema版本、Chunk数量、唯一ID、正文SHA-256和邻居ID。
+- 统一使用“资料标题 + 章节 + 正文”作为Embedding文本；页码、审核状态、清洗动作等元数据不转向量，但仍随检索结果返回。
+- 新增 `manual_embedding_index.py`，默认每批16个Chunk调用本地Qwen，复用原有按模型和文本哈希保存的向量缓存。
+- 新增 `.agent_data/manual_embedding_index.json`，保存Chunk ID、正文哈希、Embedding文本哈希、模型名、维度和Chunk Store哈希；向量仍保存在原有Embedding缓存中。
+- 第一次真实构建为332个Chunk生成332个1024维向量，0命中/332缺失，耗时约7.71秒。
+- 第二次构建332命中/0缺失，耗时约0.037秒；向量缓存约4.5MB，索引映射约84KB。
+- 新增独立真实手册语义搜索函数，支持按产品ID过滤并默认返回Top-20；当前尚未接入Agent Tool。
+- 新增中英文检索演示：SBE上传数据关键证据Top-1；RBR针脚表Top-2；O型圈具体更换步骤Top-3；USB-C采样供电结论Top-2。
+- 检索结果保留PDF页码、章节、前后Chunk ID和 `needs_review`，不会因生成向量丢失高风险标记。
+- 新增4项Chunk Store/手册Embedding测试，全部使用临时数据、不依赖本地PDF或Ollama；项目自动化测试由71项增加到75项并全部通过。
+- 当前Embedding召回已经跑通，但Top-1并不总是最完整证据；下一步需要关键词融合、重排、多样性选择和相邻Chunk扩展，再接入Agent。
+
 ## 七、问题与错误记录
 
 遇到问题时按照下面格式追加，不要只记录错误信息，还要记录最后是怎样解决的。
