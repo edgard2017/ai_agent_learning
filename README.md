@@ -107,11 +107,12 @@ python -m ocean_agent.agent --debug "请介绍 SBE 19plus V2 SeaCAT 的工作深
 3. 本地 Python 函数只从已核验目录筛选产品，返回 JSON，不让模型自行编型号。
 4. 模型根据 Tool 结果整理中文答复，并提醒选配、派生参数和配置风险。
 
-当前 Agent 提供4个 Tool：
+当前 Agent 提供5个 Tool：
 
 - `search_ocean_products`：按条件筛选候选产品。
 - `get_ocean_product_details`：查询一个明确型号的完整详情。
 - `compare_ocean_products`：按统一字段比较两个或多个候选产品。
+- `search_ocean_manuals`：检索官网下载、清洗并建立Embedding索引的真实厂家手册。
 - `search_ocean_documents`：检索带厂家来源的本地技术资料片段。
 
 多 Tool Loop 示例：
@@ -303,8 +304,7 @@ python -m tests.manual_embedding_search_demo
 ```
 
 当前演示验证了SBE数据上传、RBR MCBH针脚、O型圈更换和USB-C采样供电问题；关键证据
-均进入Top-3。正式手册索引尚未接入Agent，下一步需要加入关键词融合、Top-20初选、
-重排、结果多样性和相邻Chunk扩展。
+均进入Top-3。其后的增强检索负责关键词融合、Top-20初选、结果多样性和相邻Chunk扩展。
 
 ## 真实手册增强检索
 
@@ -331,4 +331,13 @@ python -m tests.manual_hybrid_search_demo
 
 当前对照中，SBE上传命令、RBR精确针脚表和USB-C采样供电限制均排Top-1，RBR具体
 O型圈更换步骤由纯Embedding Top-3提升到融合Top-2。针脚表和读取顺序可疑的步骤继续
-保留 `needs_review`。该增强检索仍是普通Python层，尚未注册为Agent Tool。
+保留 `needs_review`。该增强检索已经包装为第5个SDK Tool `search_ocean_manuals`：
+
+```bash
+python -m ocean_agent.agent --debug \
+  "请根据RBR官方手册说明：RBRconcerto³ C.T.D的USB-C能否为仪器采样供电？请给出资料标题、PDF页码和来源。"
+```
+
+Agent的Prompt规定：操作、接线、供电、命令和维护等问题优先查真实手册；`anchor`是直接
+检索命中，`previous_context`/`next_context`只是同章节上下文；标记`needs_review`的
+表格或针脚内容必须回到原始PDF页核验，模型不能根据扁平文本自行恢复行列关系。

@@ -5,7 +5,8 @@ import json
 from agents.decorators import tool
 
 from .hybrid_search import hybrid_search_documents
-from .models import DeploymentType, Product
+from .manual_hybrid_search import hybrid_search_manual_chunks
+from .models import DeploymentType, Product, TechnicalDocumentChunk
 from .tools import get_product_spec, search_products
 
 
@@ -213,6 +214,171 @@ def search_ocean_documents_data(
     )
 
 
+def _manual_chunk_payload(
+    chunk: TechnicalDocumentChunk,
+    *,
+    evidence_role: str,
+) -> dict[str, object]:
+    """保留引用所需元数据，并明确区分主证据和邻居上下文。"""
+
+    return {
+        "evidence_role": evidence_role,
+        "chunk_id": chunk.chunk_id,
+        "product_id": chunk.product_id,
+        "document_id": chunk.document_id,
+        "title": chunk.title,
+        "section": chunk.section,
+        "content": chunk.content,
+        "page_number": chunk.page_number,
+        "chunk_type": chunk.chunk_type,
+        "review_status": chunk.review_status,
+        "source": chunk.source.model_dump(mode="json"),
+    }
+
+
+def search_ocean_manuals_data(
+    query: str,
+    model_or_id: str | None = None,
+    limit: int = 5,
+) -> str:
+    """检索官网下载并清洗的真实厂家手册，返回分组证据。"""
+
+    if not query.strip():
+        raise ValueError("query不能为空")
+    if not 1 <= limit <= 5:
+        raise ValueError("limit必须在1到5之间")
+
+    normalized_model = model_or_id
+    if model_or_id is not None and model_or_id.strip().lower() in {
+        "",
+        "null",
+        "none",
+    }:
+        normalized_model = None
+
+    product = get_product_spec(normalized_model) if normalized_model else None
+    if normalized_model and product is None:
+        return json.dumps(
+            {
+                "query": query,
+                "product_filter": {
+                    "requested": normalized_model,
+                    "product_id": None,
+                    "model": None,
+                },
+                "anchor_count": 0,
+                "evidence_groups": [],
+                "status": "unknown_product",
+                "message": (
+                    "当前产品目录无法识别该型号，因此没有猜测产品ID或检索其他型号手册。"
+                    "请先核对型号。"
+                ),
+            },
+            ensure_ascii=False,
+        )
+
+    candidate_limit = max(20, limit * 4)
+    try:
+        groups = hybrid_search_manual_chunks(
+            query,
+            product_id=product.product_id if product else None,
+            limit=limit,
+            candidate_limit=candidate_limit,
+        )
+    except FileNotFoundError:
+        return json.dumps(
+            {
+                "query": query,
+                "product_filter": {
+                    "requested": normalized_model,
+                    "product_id": product.product_id if product else None,
+                    "model": product.model if product else None,
+                },
+                "anchor_count": 0,
+                "evidence_groups": [],
+                "status": "manual_index_unavailable",
+                "message": "本地真实手册Chunk文件不存在，当前不能检索；不得凭记忆补写。",
+            },
+            ensure_ascii=False,
+        )
+
+    evidence_groups = []
+    needs_review_count = 0
+    for group in groups:
+        anchor = _manual_chunk_payload(group.anchor.chunk, evidence_role="anchor")
+        anchor.update(
+            {
+                "retrieval_methods": list(group.anchor.retrieval_methods),
+                "keyword_score": group.anchor.keyword_score,
+                "keyword_rank": group.anchor.keyword_rank,
+                "embedding_similarity": group.anchor.embedding_similarity,
+                "embedding_rank": group.anchor.embedding_rank,
+                "fused_score": group.anchor.fused_score,
+            }
+        )
+        context = []
+        if group.previous_chunk is not None:
+            context.append(
+                _manual_chunk_payload(
+                    group.previous_chunk,
+                    evidence_role="previous_context",
+                )
+            )
+        if group.next_chunk is not None:
+            context.append(
+                _manual_chunk_payload(
+                    group.next_chunk,
+                    evidence_role="next_context",
+                )
+            )
+
+        requires_review = group.anchor.chunk.review_status == "needs_review"
+        needs_review_count += int(requires_review)
+        evidence_groups.append(
+            {
+                "anchor": anchor,
+                "context": context,
+                "evidence_warning": (
+                    "主证据标记为needs_review；表格、针脚对应关系或PDF阅读顺序可能在"
+                    "文本提取时丢失，必须核对来源URL中的原始PDF页，不能自行还原。"
+                    if requires_review
+                    else None
+                ),
+            }
+        )
+
+    return json.dumps(
+        {
+            "query": query,
+            "product_filter": {
+                "requested": normalized_model,
+                "product_id": product.product_id if product else None,
+                "model": product.model if product else None,
+            },
+            "anchor_count": len(evidence_groups),
+            "needs_review_anchor_count": needs_review_count,
+            "evidence_groups": evidence_groups,
+            "status": "ok" if evidence_groups else "no_indexed_evidence",
+            "message": (
+                "没有找到该问题的已索引真实手册证据；不得凭记忆补写。"
+                if not evidence_groups
+                else (
+                    "anchor是直接检索命中；context只是同章节前后文，不能自动视为直接证据。"
+                    "回答前必须检查正文，并引用资料标题、页码和来源URL。"
+                )
+            ),
+            "retrieval": {
+                "mode": "manual_hybrid_rrf_diverse_neighbors",
+                "initial_candidate_limit": candidate_limit,
+                "anchor_limit": limit,
+                "neighbor_policy": "same_section_only",
+                "answer_evidence_status": "requires_content_and_review_check",
+            },
+        },
+        ensure_ascii=False,
+    )
+
+
 @tool
 def search_ocean_products(
     minimum_depth_m: int | None = None,
@@ -285,3 +451,24 @@ def search_ocean_documents(
     """
 
     return search_ocean_documents_data(query, model_or_id=model_or_id, limit=limit)
+
+
+@tool
+def search_ocean_manuals(
+    query: str,
+    model_or_id: str | None = None,
+    limit: int = 5,
+) -> str:
+    """检索官网下载、清洗并建立Embedding索引的真实厂家数据表和用户手册。
+
+    用户询问操作步骤、连接接线、供电限制、命令、数据上传、维护、校准或故障排查时
+    优先使用。返回的anchor是主命中，context只是同章节前后文；needs_review内容必须
+    回到来源PDF核验，尤其不能根据提取文本自行还原针脚表格。
+
+    Args:
+        query: 完整、具体的手册问题；证据不足时可换更窄的关键词再次检索。
+        model_or_id: 已知时传完整型号或产品ID；不确定具体型号时传null。
+        limit: 最多返回的主证据组数量，范围1到5。
+    """
+
+    return search_ocean_manuals_data(query, model_or_id=model_or_id, limit=limit)

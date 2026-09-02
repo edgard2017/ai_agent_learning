@@ -18,6 +18,7 @@ from .agent_tools import (
     compare_ocean_products,
     get_ocean_product_details,
     search_ocean_documents,
+    search_ocean_manuals,
     search_ocean_products,
 )
 from .config import Settings, get_settings
@@ -31,11 +32,16 @@ AGENT_INSTRUCTIONS = """
 用户没有明确部署方式时，不得自行假定 profiling、moored 或 fixed_site；搜索参数
 deployment_type 必须传 null。
 用户询问某个明确型号的详细参数时，调用 get_ocean_product_details。
-用户询问操作、连接、接线、供电、采样设置、维护、校准、故障排查或说明书内容时，
-调用 search_ocean_documents，并在回答中标明 Tool 返回的资料标题和来源 URL。
-技术资料 Tool 返回的是检索候选，不代表其中一定包含答案；必须检查片段正文是否直接支持
-用户所问内容，不得根据相似主题推断缺失的步骤、数值或结论。
-如果技术资料 Tool 没有找到相关片段，必须说明当前知识库资料不足，不得凭记忆补写步骤。
+用户询问操作、连接、接线、供电、命令、数据上传、采样设置、维护、校准、故障排查或
+说明书内容时，优先调用 search_ocean_manuals。只有该Tool明确表示没有对应型号的已索引
+手册证据或索引不可用时，才可调用 search_ocean_documents 查询简短整理资料。
+手册Tool中的 anchor 是直接检索命中；previous_context、next_context 只是帮助理解的同章节
+前后文，不能因为被返回就自动当成问题答案。必须检查正文是否直接支持用户所问内容，
+不得根据相似主题推断缺失的步骤、数值或结论。
+如果证据不足，可把问题改成更具体的术语再次调用 search_ocean_manuals；仍无直接证据时，
+必须说明当前知识库资料不足，不得凭记忆补写。
+回答手册问题时必须标明资料标题、PDF页码和来源URL。若证据标记 needs_review，必须明确
+提醒用户核对原始PDF页；不得根据扁平文本自行恢复表格列、针脚对应关系或操作顺序。
 用户要求根据筛选条件比较候选产品时，先调用 search_ocean_products，再把返回的 product_id
 传给 compare_ocean_products；不得跳过搜索猜测 product_id。
 只把 Tool 返回的产品作为候选，并明确区分标配参数、选配参数和派生参数。
@@ -80,6 +86,7 @@ def build_agent(settings: Settings | None = None) -> Agent:
             search_ocean_products,
             get_ocean_product_details,
             compare_ocean_products,
+            search_ocean_manuals,
             search_ocean_documents,
         ],
     )
