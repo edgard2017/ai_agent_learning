@@ -305,3 +305,30 @@ python -m tests.manual_embedding_search_demo
 当前演示验证了SBE数据上传、RBR MCBH针脚、O型圈更换和USB-C采样供电问题；关键证据
 均进入Top-3。正式手册索引尚未接入Agent，下一步需要加入关键词融合、Top-20初选、
 重排、结果多样性和相邻Chunk扩展。
+
+## 真实手册增强检索
+
+`manual_hybrid_search.py`在真实手册索引上完成以下流程：
+
+```text
+中文/英文问题
+→ 领域关键词扩展 + Qwen Embedding各取Top-20
+→ RRF融合排名
+→ 过滤封面网址等低信息Chunk
+→ 去除近似重复结果
+→ 每个章节选择一个主证据
+→ 补充同章节的前后Chunk
+```
+
+邻居Chunk只标记为上下文，不冒充直接命中；跨几十页的相关信息由多个主命中召回，
+不会把两个相隔很远的章节强行拼成一个Chunk。Embedding不可用时会退回关键词检索。
+
+运行真实对照：
+
+```bash
+python -m tests.manual_hybrid_search_demo
+```
+
+当前对照中，SBE上传命令、RBR精确针脚表和USB-C采样供电限制均排Top-1，RBR具体
+O型圈更换步骤由纯Embedding Top-3提升到融合Top-2。针脚表和读取顺序可疑的步骤继续
+保留 `needs_review`。该增强检索仍是普通Python层，尚未注册为Agent Tool。
